@@ -89,7 +89,16 @@ export class PostComponent implements OnDestroy {
             .pipe(takeUntil(this.unsubscribe$))
             .subscribe((post) => (this.post = post));
     }
-
+    public getLikes(){
+        var filteredLikes = this.post.reactions.filter(reactions => reactions.isLike == true)
+        var countLikes = filteredLikes.length;
+        return countLikes;
+    }
+    public getDislikes(){
+        var filteredDislikes = this.post.reactions.filter(reactions => reactions.isDislike == true)
+        var countDislikes = filteredDislikes.length;
+        return countDislikes;
+    }
     public sendComment() {
         this.newComment.authorId = this.currentUser.id;
         this.newComment.postId = this.post.id;

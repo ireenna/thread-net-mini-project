@@ -10,11 +10,11 @@
   </mat-card-content>
   <mat-card-actions class="actions-buttons" align="end">
     <button mat-icon-button color="primary" (click)="dislikePost()">
-      <mat-icon matBadge="{{post.reactions.length}}" matBadgeColor="accent" matBadgeSize="medium"
+      <mat-icon matBadge="{{getDislikes()}}" matBadgeColor="accent" matBadgeSize="medium"
         [matBadgeHidden]="post.reactions.length === 0" aria-label="Dislike">mood bad</mat-icon>
     </button>
     <button mat-icon-button color="primary" (click)="likePost()">
-      <mat-icon matBadge="{{post.reactions.length}}" matBadgeColor="accent" matBadgeSize="medium"
+      <mat-icon matBadge="{{getLikes()}}" matBadgeColor="accent" matBadgeSize="medium"
         [matBadgeHidden]="post.reactions.length === 0" aria-label="Like">favorite</mat-icon>
     </button>
     <button mat-icon-button color="accent">
