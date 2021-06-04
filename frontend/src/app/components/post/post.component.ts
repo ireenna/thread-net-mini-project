@@ -72,6 +72,23 @@ export class PostComponent implements OnDestroy {
             .pipe(takeUntil(this.unsubscribe$))
             .subscribe((post) => (this.post = post));
     }
+    public dislikePost() {
+        if (!this.currentUser) {
+            this.catchErrorWrapper(this.authService.getUser())
+                .pipe(
+                    switchMap((userResp) => this.likeService.dislikePost(this.post, userResp)),
+                    takeUntil(this.unsubscribe$)
+                )
+                .subscribe((post) => (this.post = post));
+
+            return;
+        }
+
+        this.likeService
+            .dislikePost(this.post, this.currentUser)
+            .pipe(takeUntil(this.unsubscribe$))
+            .subscribe((post) => (this.post = post));
+    }
 
     public sendComment() {
         this.newComment.authorId = this.currentUser.id;

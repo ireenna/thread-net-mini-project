@@ -46,5 +46,13 @@ namespace Thread_.NET.WebAPI.Controllers
             await _likeService.LikePost(reaction);
             return Ok();
         }
+        [HttpPost("dislike")]
+        public async Task<IActionResult> DislikePost(NewReactionDTO reaction)
+        {
+            reaction.UserId = this.GetUserIdFromToken();
+
+            await _likeService.DislikePost(reaction);
+            return Ok();
+        }
     }
 }
