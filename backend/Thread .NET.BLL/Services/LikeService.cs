@@ -20,14 +20,14 @@ namespace Thread_.NET.BLL.Services
                 _context.PostReactions.RemoveRange(likes);
                 await _context.SaveChangesAsync();
 
-                return;
+                //return;
             }
 
             _context.PostReactions.Add(new DAL.Entities.PostReaction
             {
                 PostId = reaction.EntityId,
                 IsLike = reaction.IsLike,
-                IsDislike = false,
+                IsDislike = reaction.IsDislike,
                 UserId = reaction.UserId
             });
 
@@ -42,13 +42,13 @@ namespace Thread_.NET.BLL.Services
                 _context.PostReactions.RemoveRange(dislikes);
                 await _context.SaveChangesAsync();
 
-                return;
+                //return;
             }
 
             _context.PostReactions.Add(new DAL.Entities.PostReaction
             {
                 PostId = reaction.EntityId,
-                IsLike = false,
+                IsLike = reaction.IsLike,
                 IsDislike = reaction.IsDislike,
                 UserId = reaction.UserId
             });
