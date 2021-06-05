@@ -16,11 +16,13 @@ namespace Thread_.NET.WebAPI.Controllers
     {
         private readonly PostService _postService;
         private readonly LikeService _likeService;
+        private readonly DislikeService _dislikeService;
 
-        public PostsController(PostService postService, LikeService likeService)
+        public PostsController(PostService postService, LikeService likeService, DislikeService dislikeService)
         {
             _postService = postService;
             _likeService = likeService;
+            _dislikeService = dislikeService;
         }
 
         [HttpGet]
@@ -51,7 +53,7 @@ namespace Thread_.NET.WebAPI.Controllers
         {
             reaction.UserId = this.GetUserIdFromToken();
 
-            await _likeService.DislikePost(reaction);
+            await _dislikeService.DislikePost(reaction);
             return Ok();
         }
     }

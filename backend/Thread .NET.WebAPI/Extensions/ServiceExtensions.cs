@@ -30,6 +30,7 @@ namespace Thread_.NET.Extensions
 
             services.AddScoped<AuthService>();
             services.AddScoped<LikeService>();
+            services.AddScoped<DislikeService>();
             services.AddScoped<PostService>();
             services.AddScoped<UserService>();
             services.AddScoped<CommentService>();

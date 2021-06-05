@@ -38,9 +38,6 @@ export class LikeService {
             map(() => innerPost),
             catchError(() => {
                 // revert current array changes in case of any error
-                // innerPost.reactions = hasReaction
-                //     ? innerPost.reactions.filter((x) => x.user.id !== currentUser.id)
-                //     : innerPost.reactions.concat({ isLike: true, isDislike:false, user: currentUser });
                 if(disliked){
                     innerPost.reactions = innerPost.reactions.filter((x) => x.user.id !== currentUser.id);
                     innerPost.reactions = innerPost.reactions.concat({ isLike: true, isDislike:false, user: currentUser });
@@ -64,12 +61,6 @@ export class LikeService {
         };
 
         // update current array instantly
-        // let hasReaction = innerPost.reactions.some((x) => x.user.id === currentUser.id);
-        // innerPost.reactions = hasReaction
-        //     ? innerPost.reactions.filter((x) => x.user.id !== currentUser.id)
-        //     : innerPost.reactions.concat({ isDislike: true, isLike:false, user: currentUser });
-        // hasReaction = innerPost.reactions.some((x) => x.user.id === currentUser.id);
-
         let hasReaction = innerPost.reactions.some((x) => x.user.id === currentUser.id);
         let liked =innerPost.reactions.some((x) => x.user.id === currentUser.id && x.isLike == true);
         if(liked){
@@ -82,7 +73,7 @@ export class LikeService {
         }
         hasReaction = innerPost.reactions.some((x) => x.user.id === currentUser.id);
 
-        return this.postService.likePost(reaction).pipe(
+        return this.postService.dislikePost(reaction).pipe(
             map(() => innerPost),
             catchError(() => {
                 // revert current array changes in case of any error
