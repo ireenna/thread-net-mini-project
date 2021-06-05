@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Thread_.NET.BLL.Services;
 using Thread_.NET.Common.DTO.Like;
 using Thread_.NET.Common.DTO.Post;
+using Thread_.NET.Common.DTO.User;
 using Thread_.NET.Extensions;
 
 namespace Thread_.NET.WebAPI.Controllers
@@ -32,6 +33,15 @@ namespace Thread_.NET.WebAPI.Controllers
             return Ok(await _postService.GetAllPosts());
         }
 
+        [HttpGet("liked")]
+        public async Task<ActionResult<ICollection<PostDTO>>> GetByLikes()
+        {
+            int userId = this.GetUserIdFromToken();
+
+            await _postService.GetAllLikedPosts(userId);
+            return Ok();
+        }
+
         [HttpPost]
         public async Task<ActionResult<PostDTO>> CreatePost([FromBody] PostCreateDTO dto)
         {
@@ -56,5 +66,6 @@ namespace Thread_.NET.WebAPI.Controllers
             await _dislikeService.DislikePost(reaction);
             return Ok();
         }
+        
     }
 }

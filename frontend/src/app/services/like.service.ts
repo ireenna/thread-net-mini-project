@@ -27,8 +27,8 @@ export class LikeService {
         let hasReaction = innerPost.reactions.some((x) => x.user.id === currentUser.id);
         let disliked =innerPost.reactions.some((x) => x.user.id === currentUser.id && x.isDislike == true);
         if(disliked){
-            innerPost.reactions = innerPost.reactions.filter((x) => x.user.id !== currentUser.id);
-            innerPost.reactions = innerPost.reactions.concat({ isLike: true, isDislike:false, user: currentUser });
+            innerPost.reactions = innerPost.reactions.filter((x) => x.user.id !== currentUser.id)
+            .concat({ isLike: true, isDislike:false, user: currentUser });
         } else {
             innerPost.reactions = hasReaction
                 ? innerPost.reactions.filter((x) => x.user.id !== currentUser.id)
@@ -41,8 +41,8 @@ export class LikeService {
             catchError(() => {
                 // revert current array changes in case of any error
                 if(disliked){
-                    innerPost.reactions = innerPost.reactions.filter((x) => x.user.id !== currentUser.id);
-                    innerPost.reactions = innerPost.reactions.concat({ isLike: true, isDislike:false, user: currentUser });
+                    innerPost.reactions = innerPost.reactions.filter((x) => x.user.id !== currentUser.id)
+                    .concat({ isLike: true, isDislike:false, user: currentUser });
                 } else {
                     innerPost.reactions = hasReaction
                         ? innerPost.reactions.filter((x) => x.user.id !== currentUser.id)
@@ -66,8 +66,8 @@ export class LikeService {
         let hasReaction = innerPost.reactions.some((x) => x.user.id === currentUser.id);
         let disliked =innerPost.reactions.some((x) => x.user.id === currentUser.id && x.isDislike == true);
         if(disliked){
-            innerPost.reactions = innerPost.reactions.filter((x) => x.user.id !== currentUser.id);
-            innerPost.reactions = innerPost.reactions.concat({ isLike: true, isDislike:false, user: currentUser });
+            innerPost.reactions = innerPost.reactions.filter((x) => x.user.id !== currentUser.id)
+            .concat({ isLike: true, isDislike:false, user: currentUser });
         } else {
             innerPost.reactions = hasReaction
                 ? innerPost.reactions.filter((x) => x.user.id !== currentUser.id)
@@ -80,8 +80,8 @@ export class LikeService {
             catchError(() => {
                 // revert current array changes in case of any error
                 if(disliked){
-                    innerPost.reactions = innerPost.reactions.filter((x) => x.user.id !== currentUser.id);
-                    innerPost.reactions = innerPost.reactions.concat({ isLike: true, isDislike:false, user: currentUser });
+                    innerPost.reactions = innerPost.reactions.filter((x) => x.user.id !== currentUser.id)
+                    .concat({ isLike: true, isDislike:false, user: currentUser });
                 } else {
                     innerPost.reactions = hasReaction
                         ? innerPost.reactions.filter((x) => x.user.id !== currentUser.id)
@@ -105,8 +105,8 @@ export class LikeService {
         let hasReaction = innerPost.reactions.some((x) => x.user.id === currentUser.id);
         let liked =innerPost.reactions.some((x) => x.user.id === currentUser.id && x.isLike == true);
         if(liked){
-            innerPost.reactions = innerPost.reactions.filter((x) => x.user.id !== currentUser.id);
-            innerPost.reactions = innerPost.reactions.concat({ isDislike: true, isLike:false, user: currentUser });
+            innerPost.reactions = innerPost.reactions.filter((x) => x.user.id !== currentUser.id)
+            .concat({ isDislike: true, isLike:false, user: currentUser });
         } else {
             innerPost.reactions = hasReaction
                 ? innerPost.reactions.filter((x) => x.user.id !== currentUser.id)
@@ -119,8 +119,8 @@ export class LikeService {
             catchError(() => {
                 // revert current array changes in case of any error
                 if(liked){
-                    innerPost.reactions = innerPost.reactions.filter((x) => x.user.id !== currentUser.id);
-                    innerPost.reactions = innerPost.reactions.concat({ isDislike: true, isLike:false, user: currentUser });
+                    innerPost.reactions = innerPost.reactions.filter((x) => x.user.id !== currentUser.id)
+                    .concat({ isDislike: true, isLike:false, user: currentUser });
                 } else {
                     innerPost.reactions = hasReaction
                         ? innerPost.reactions.filter((x) => x.user.id !== currentUser.id)
@@ -144,8 +144,8 @@ export class LikeService {
         let hasReaction = innerPost.reactions.some((x) => x.user.id === currentUser.id);
         let liked =innerPost.reactions.some((x) => x.user.id === currentUser.id && x.isLike == true);
         if(liked){
-            innerPost.reactions = innerPost.reactions.filter((x) => x.user.id !== currentUser.id);
-            innerPost.reactions = innerPost.reactions.concat({ isDislike: true, isLike:false, user: currentUser });
+            innerPost.reactions = innerPost.reactions.filter((x) => x.user.id !== currentUser.id)
+            .concat({ isDislike: true, isLike:false, user: currentUser });
         } else {
             innerPost.reactions = hasReaction
                 ? innerPost.reactions.filter((x) => x.user.id !== currentUser.id)
@@ -158,8 +158,8 @@ export class LikeService {
             catchError(() => {
                 // revert current array changes in case of any error
                 if(liked){
-                    innerPost.reactions = innerPost.reactions.filter((x) => x.user.id !== currentUser.id);
-                    innerPost.reactions = innerPost.reactions.concat({ isDislike: true, isLike:false, user: currentUser });
+                    innerPost.reactions = innerPost.reactions.filter((x) => x.user.id !== currentUser.id)
+                    .concat({ isDislike: true, isLike:false, user: currentUser });
                 } else {
                     innerPost.reactions = hasReaction
                         ? innerPost.reactions.filter((x) => x.user.id !== currentUser.id)

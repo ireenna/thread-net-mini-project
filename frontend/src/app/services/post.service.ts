@@ -14,6 +14,10 @@ export class PostService {
         return this.httpService.getFullRequest<Post[]>(`${this.routePrefix}`);
     }
 
+    public getLikedPosts() {
+        return this.httpService.getFullRequest<Post[]>(`${this.routePrefix}/liked`);
+    }
+
     public createPost(post: NewPost) {
         return this.httpService.postFullRequest<Post>(`${this.routePrefix}`, post);
     }
@@ -21,6 +25,7 @@ export class PostService {
     public likePost(reaction: NewReaction) {
         return this.httpService.postFullRequest<Post>(`${this.routePrefix}/like`, reaction);
     }
+
     public dislikePost(reaction: NewReaction) {
         return this.httpService.postFullRequest<Post>(`${this.routePrefix}/dislike`, reaction);
     }

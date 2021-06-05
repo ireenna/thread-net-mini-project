@@ -24,6 +24,7 @@ export class MainThreadComponent implements OnInit, OnDestroy {
     public posts: Post[] = [];
     public cachedPosts: Post[] = [];
     public isOnlyMine = false;
+    public isLikedByMe = false;
 
     public currentUser: User;
     public imageUrl: string;
@@ -76,6 +77,18 @@ export class MainThreadComponent implements OnInit, OnDestroy {
                 (error) => (this.loadingPosts = false)
             );
     }
+    // public getLikedPosts() {
+    //     this.postService
+    //         .getLikedPosts()
+    //         .pipe(takeUntil(this.unsubscribe$))
+    //         .subscribe(
+    //             (resp) => {
+    //                 this.loadingPosts = false;
+    //                 this.posts = this.cachedPosts = resp.body;
+    //             },
+    //             (error) => (this.loadingPosts = false)
+    //         );
+    // }
 
     public sendPost() {
         const postSubscription = !this.imageFile
@@ -131,6 +144,26 @@ export class MainThreadComponent implements OnInit, OnDestroy {
             this.posts = this.cachedPosts.filter((x) => x.author.id === this.currentUser.id);
         } else {
             this.isOnlyMine = false;
+            this.posts = this.cachedPosts;
+        }
+    }
+    public sliderChangedByLikes(event: MatSlideToggleChange) {
+        if (event.checked) {
+
+            this.postService
+            .getLikedPosts()
+            .pipe(takeUntil(this.unsubscribe$))
+            .subscribe(
+                (resp) => {
+                    this.isLikedByMe = true;
+                    this.posts = resp.body;
+                    
+                },
+                (error) => (this.isLikedByMe = false)
+            );
+            alert(this.isLikedByMe);
+        } else {
+            this.isLikedByMe = false;
             this.posts = this.cachedPosts;
         }
     }

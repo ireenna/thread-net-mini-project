@@ -53,6 +53,20 @@ namespace Thread_.NET.BLL.Services
             return _mapper.Map<ICollection<PostDTO>>(posts);
         }
 
+        public async Task<ICollection<PostDTO>> GetAllLikedPosts(int userId)
+        {
+            var posts = await _context.PostReactions
+                    .Join(_context.Posts, 
+                    pr => pr.PostId, 
+                    p=> p.Id,
+                    (pr,p)=>new {pr,p})
+                    .Where(x => x.pr.UserId == userId && x.pr.IsLike) // Filter here
+                    .Select(x => x.p)
+                .ToListAsync();
+
+            return _mapper.Map<ICollection<PostDTO>>(posts);
+        }
+
         public async Task<PostDTO> CreatePost(PostCreateDTO postDto)
         {
             var postEntity = _mapper.Map<Post>(postDto);
