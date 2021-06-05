@@ -24,4 +24,5 @@ export class PostService {
     public dislikePost(reaction: NewReaction) {
         return this.httpService.postFullRequest<Post>(`${this.routePrefix}/dislike`, reaction);
     }
+    
 }
