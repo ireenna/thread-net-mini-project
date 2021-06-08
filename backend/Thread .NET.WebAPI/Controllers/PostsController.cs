@@ -37,9 +37,7 @@ namespace Thread_.NET.WebAPI.Controllers
         public async Task<ActionResult<ICollection<PostDTO>>> GetByLikes()
         {
             int userId = this.GetUserIdFromToken();
-
-            await _postService.GetAllLikedPosts(userId);
-            return Ok();
+            return Ok(await _postService.GetAllLikedPosts(userId));
         }
 
         [HttpPost]
@@ -48,6 +46,26 @@ namespace Thread_.NET.WebAPI.Controllers
             dto.AuthorId = this.GetUserIdFromToken();
 
             return Ok(await _postService.CreatePost(dto));
+        }
+
+        [HttpPut("{id}")]
+        [AllowAnonymous]
+        public async Task<ActionResult<PostDTO>> UpdatePost([FromBody] PostDTO dto, [FromRoute] int id)
+        {
+            try
+            {
+                if (dto.Author.Id == 22)
+                {
+                    return Ok(await _postService.UpdatePost(dto));
+                }
+                throw new System.Exception();
+            }
+            catch
+            {
+                return BadRequest();
+            }
+            
+            
         }
 
         [HttpPost("like")]

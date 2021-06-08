@@ -55,13 +55,25 @@ namespace Thread_.NET.BLL.Services
 
         public async Task<ICollection<PostDTO>> GetAllLikedPosts(int userId)
         {
+            //var posts = await _context.PostReactions
+            //        .Join(_context.Posts, 
+            //        pr => pr.PostId, 
+            //        p=> p.Id,
+            //        (pr,p)=>new {pr,p})
+            //        .Where(x => x.pr.UserId == userId && x.pr.IsLike) // Filter here
+            //        .Select(x => x.p)
+            //    .ToListAsync();
             var posts = await _context.PostReactions
-                    .Join(_context.Posts, 
-                    pr => pr.PostId, 
-                    p=> p.Id,
-                    (pr,p)=>new {pr,p})
-                    .Where(x => x.pr.UserId == userId && x.pr.IsLike) // Filter here
-                    .Select(x => x.p)
+                
+                .Where(p => p.UserId == userId && p.IsLike)
+                .Join(_context.Posts, pr=>pr.PostId, p=>p.Id, (pr,p)=>new{p})
+                .Select(x=>x.p)
+                .Include(post => post.Author)
+                .ThenInclude(author => author.Avatar)
+                .Include(post => post.Preview)
+                .Include(post => post.Comments)
+                .ThenInclude(comment => comment.Author)
+                .Include(post => post.Reactions)
                 .ToListAsync();
 
             return _mapper.Map<ICollection<PostDTO>>(posts);
@@ -83,6 +95,31 @@ namespace Thread_.NET.BLL.Services
             await _postHub.Clients.All.SendAsync("NewPost", createdPostDTO);
 
             return createdPostDTO;
+        }
+        public async Task<PostDTO> UpdatePost(PostDTO postDto)
+        {
+            //if (findedpost!=null)
+            //{
+            //    findedpost.Body = postDto.Body;
+            //    findedpost.UpdatedAt = System.DateTime.Now;
+            //    await _context.Posts.Update(findedpost);
+            //}
+            var findedpost = await _context.Posts.Where(x => x.Id == postDto.Id).FirstOrDefaultAsync();
+            if (findedpost != null)
+            {
+                findedpost.Body = postDto.Body;
+                findedpost.UpdatedAt = System.DateTime.Now;
+                var updatedPost = await _context.Posts
+                .Include(post => post.Author)
+                .ThenInclude(author => author.Avatar)
+                .FirstAsync(post => post.Id == findedpost.Id);
+
+                var updatedPostDTO = _mapper.Map<PostDTO>(updatedPost);
+                await _postHub.Clients.All.SendAsync("ChangedPost", updatedPostDTO);
+
+                return updatedPostDTO;
+            }
+            throw new System.Exception();
         }
     }
 }

@@ -77,18 +77,6 @@ export class MainThreadComponent implements OnInit, OnDestroy {
                 (error) => (this.loadingPosts = false)
             );
     }
-    // public getLikedPosts() {
-    //     this.postService
-    //         .getLikedPosts()
-    //         .pipe(takeUntil(this.unsubscribe$))
-    //         .subscribe(
-    //             (resp) => {
-    //                 this.loadingPosts = false;
-    //                 this.posts = this.cachedPosts = resp.body;
-    //             },
-    //             (error) => (this.loadingPosts = false)
-    //         );
-    // }
 
     public sendPost() {
         const postSubscription = !this.imageFile
@@ -149,7 +137,6 @@ export class MainThreadComponent implements OnInit, OnDestroy {
     }
     public sliderChangedByLikes(event: MatSlideToggleChange) {
         if (event.checked) {
-
             this.postService
             .getLikedPosts()
             .pipe(takeUntil(this.unsubscribe$))
@@ -157,14 +144,13 @@ export class MainThreadComponent implements OnInit, OnDestroy {
                 (resp) => {
                     this.isLikedByMe = true;
                     this.posts = resp.body;
-                    
                 },
-                (error) => (this.isLikedByMe = false)
+                (error) => (this.isLikedByMe = false) 
             );
-            alert(this.isLikedByMe);
         } else {
             this.isLikedByMe = false;
-            this.posts = this.cachedPosts;
+            this.getPosts(); //this works longer but correct
+            //this.posts = this.cachedPosts; //for actual data you need to reload the page
         }
     }
 
