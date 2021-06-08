@@ -1,8 +1,13 @@
-<mat-card [ngClass]="{'post-with-comments': showComments}">
+<mat-card *ngIf="this.postEditMode === false" [ngClass]="{'post-with-comments': showComments}">
   <mat-card-header>
     <img mat-card-avatar src="{{post.author.avatar}}" alt="Avatar">
     <mat-card-title>{{post.author.userName}}</mat-card-title>
     <div class="date">{{post.createdAt | date:'d/M/yy, h:mm a'}}</div>
+    <div *ngIf="post.author.userName === currentUser.userName">
+    <button mat-icon-button matTooltip="Edit a post" (click)="toggleEditMode()">
+      <mat-icon>edit</mat-icon>
+    </button>
+    </div>
   </mat-card-header>
   <img mat-card-image *ngIf="post.previewImage" mat-card-image src="{{post.previewImage}}" alt="Photo">
   <mat-card-content>
@@ -40,4 +45,28 @@
     </div>
     <app-comment *ngFor="let _comment of post.comments" [comment]="_comment"></app-comment>
   </div>
+</mat-card>
+<mat-card *ngIf="currentUser && this.postEditMode === true">
+  <mat-card-header>
+    <img mat-card-avatar src="{{post.author.avatar}}" alt="Avatar">
+    <mat-card-title>{{post.author.userName}}</mat-card-title>
+    <div class="date">{{post.createdAt | date:'d/M/yy, h:mm a'}}</div>
+  </mat-card-header>
+  
+  <img mat-card-image *ngIf="post.previewImage" mat-card-image src="{{post.previewImage}}" alt="Photo">
+  <form name="postForm" #postForm="ngForm" class="main-content">
+    <mat-form-field>
+        <textarea name="body" [(ngModel)]="post.body" #body="ngModel" matInput placeholder="Text...">{{post.body}}</textarea>
+    </mat-form-field>
+  </form>
+  <mat-card-actions class="actions-buttons" >
+    <div class="button">
+      <button mat-raised-button color="primary" (click)="saveEditedPost()">
+        Save
+      </button>
+      <button mat-raised-button (click)="toggleEditMode()">
+        Cancel
+      </button>
+  </div>
+  </mat-card-actions>
 </mat-card>

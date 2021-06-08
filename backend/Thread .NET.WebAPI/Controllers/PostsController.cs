@@ -49,19 +49,11 @@ namespace Thread_.NET.WebAPI.Controllers
         }
 
         [HttpPut("{id}")]
-        [AllowAnonymous]
         public async Task<ActionResult<PostDTO>> UpdatePost([FromBody] PostUpdateDTO dto, [FromRoute] int id)
         {
-            int userId = 22;
-            //try
-            {
-                return Ok(await _postService.UpdatePost(dto, id, userId));
-            }
-            //catch
-            //{
-            //    return BadRequest();
-            //}
-                      
+            int userId = this.GetUserIdFromToken();
+
+            return Ok(await _postService.UpdatePost(dto, id, userId));
         }
 
         [HttpPost("like")]

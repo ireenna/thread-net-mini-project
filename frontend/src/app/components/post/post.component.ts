@@ -11,6 +11,8 @@ import { User } from '../../models/user';
 import { Comment } from '../../models/comment/comment';
 import { catchError, switchMap, takeUntil } from 'rxjs/operators';
 import { SnackBarService } from '../../services/snack-bar.service';
+import { PostService } from 'src/app/services/post.service';
+import { EditPost } from 'src/app/models/post/edit-post';
 
 @Component({
     selector: 'app-post',
@@ -20,9 +22,11 @@ import { SnackBarService } from '../../services/snack-bar.service';
 export class PostComponent implements OnDestroy {
     @Input() public post: Post;
     @Input() public currentUser: User;
-
+    @Input() public editedPost: EditPost;
     public showComments = false;
     public newComment = {} as NewComment;
+    public postEditMode = false;
+    public loading = false;
 
     private unsubscribe$ = new Subject<void>();
 
@@ -31,7 +35,8 @@ export class PostComponent implements OnDestroy {
         private authDialogService: AuthDialogService,
         private likeService: LikeService,
         private commentService: CommentService,
-        private snackBarService: SnackBarService
+        private snackBarService: SnackBarService,
+        private postService: PostService
     ) {}
 
     public ngOnDestroy() {
@@ -132,5 +137,26 @@ export class PostComponent implements OnDestroy {
 
     private sortCommentArray(array: Comment[]): Comment[] {
         return array.sort((a, b) => +new Date(b.createdAt) - +new Date(a.createdAt));
+    }
+
+    public toggleEditMode() {
+        this.postEditMode = !this.postEditMode;
+    }
+
+    public saveEditedPost() {
+        this.editedPost = {body:this.post.body};
+        const postEditing = this.postService.updatePost(this.editedPost, this.post.id);
+        this.loading = true;
+
+        postEditing.pipe(takeUntil(this.unsubscribe$)).subscribe(
+            (resp) => {
+                this.post = resp.body;
+                this.snackBarService.showUsualMessage('Successfully updated');
+                this.loading = false;
+            },
+            (error) => this.snackBarService.showErrorMessage(error)
+        );
+
+        this.postEditMode = false;
     }
 }

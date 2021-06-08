@@ -64,6 +64,8 @@ namespace Thread_.NET.BLL.Services
                 .Include(post => post.Preview)
                 .Include(post => post.Comments)
                 .ThenInclude(comment => comment.Author)
+                .Include(post => post.Comments)
+                .ThenInclude(comment => comment.Reactions)
                 .Include(post => post.Reactions)
                 .ToListAsync();
 
@@ -95,15 +97,17 @@ namespace Thread_.NET.BLL.Services
             {
                 findedPost.Body = postUpdateDto.Body;
                 findedPost.UpdatedAt = System.DateTime.Now;
-                //_context.Posts.Update(findedPost);
                 await _context.SaveChangesAsync();
             }
+
             var updatedPost = await _context.Posts
                 .Include(post => post.Author)
                     .ThenInclude(author => author.Avatar)
                 .Include(post => post.Preview)
                 .Include(post => post.Comments)
                     .ThenInclude(comment => comment.Author)
+                .Include(post => post.Comments)
+                    .ThenInclude(comment => comment.Reactions)
                 .Include(post => post.Reactions)
                 .FirstAsync(post => post.Id == findedPost.Id);
 
@@ -111,8 +115,6 @@ namespace Thread_.NET.BLL.Services
             await _postHub.Clients.All.SendAsync("UpdatedPost", updatedPostDTO);
                 
             return updatedPostDTO;
-            
-            
         }
     }
 }
