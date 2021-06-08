@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using System.Threading.Tasks;
 using Thread_.NET.BLL.Services.Abstract;
 using Thread_.NET.Common.DTO.Comment;
@@ -25,6 +26,28 @@ namespace Thread_.NET.BLL.Services
                 .FirstAsync(comment => comment.Id == commentEntity.Id);
 
             return _mapper.Map<CommentDTO>(createdComment);
+        }
+
+        public async Task<CommentDTO> UpdateComment(CommentUpdateDTO commentUpdateDto, int commentId, int userId)
+        {
+            var findedComment = await _context.Comments.Where(x => x.Id == commentId).FirstOrDefaultAsync();
+            
+            if (findedComment != null && findedComment.AuthorId == userId)
+            {
+                findedComment.Body = commentUpdateDto.Body;
+                await _context.SaveChangesAsync();
+            }
+
+            var updatedComment = await _context.Comments
+                .Include(comment => comment.Author)
+                    .ThenInclude(author => author.Avatar)
+                .Include(comment => comment.Reactions)
+                    .ThenInclude(reactions => reactions.User)
+                .FirstAsync(comment => comment.Id == findedComment.Id);
+
+            var updatedCommentDTO = _mapper.Map<CommentDTO>(updatedComment);
+
+            return updatedCommentDTO;
         }
     }
 }

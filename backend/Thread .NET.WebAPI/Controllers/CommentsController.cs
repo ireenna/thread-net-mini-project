@@ -31,6 +31,15 @@ namespace Thread_.NET.WebAPI.Controllers
             return Ok(await _commentService.CreateComment(comment));
         }
 
+        [HttpPut("{id}")]
+        [AllowAnonymous]
+        public async Task<ActionResult<CommentDTO>> UpdateComment([FromBody] CommentUpdateDTO dto, [FromRoute] int id)
+        {
+            int userId = 22;
+
+            return Ok(await _commentService.UpdateComment(dto, id, userId));
+        }
+
         [HttpPost("like")]
         public async Task<IActionResult> LikeComment(NewReactionDTO reaction)
         {

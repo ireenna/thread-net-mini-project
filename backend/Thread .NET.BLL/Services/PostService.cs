@@ -67,6 +67,7 @@ namespace Thread_.NET.BLL.Services
                 .Include(post => post.Comments)
                 .ThenInclude(comment => comment.Reactions)
                 .Include(post => post.Reactions)
+                .ThenInclude(reactions => reactions.User)
                 .ToListAsync();
 
             return _mapper.Map<ICollection<PostDTO>>(posts);
