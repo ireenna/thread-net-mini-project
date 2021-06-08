@@ -50,22 +50,18 @@ namespace Thread_.NET.WebAPI.Controllers
 
         [HttpPut("{id}")]
         [AllowAnonymous]
-        public async Task<ActionResult<PostDTO>> UpdatePost([FromBody] PostDTO dto, [FromRoute] int id)
+        public async Task<ActionResult<PostDTO>> UpdatePost([FromBody] PostUpdateDTO dto, [FromRoute] int id)
         {
-            try
+            int userId = 22;
+            //try
             {
-                if (dto.Author.Id == 22)
-                {
-                    return Ok(await _postService.UpdatePost(dto));
-                }
-                throw new System.Exception();
+                return Ok(await _postService.UpdatePost(dto, id, userId));
             }
-            catch
-            {
-                return BadRequest();
-            }
-            
-            
+            //catch
+            //{
+            //    return BadRequest();
+            //}
+                      
         }
 
         [HttpPost("like")]
