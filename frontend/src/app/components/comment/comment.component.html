@@ -1,8 +1,13 @@
-<mat-card>
+<mat-card *ngIf="this.commentEditMode === false">
   <mat-card-header>
     <img mat-card-avatar src="{{comment.author.avatar}}" alt="Avatar">
     <mat-card-title>{{comment.author.userName}} </mat-card-title>
     <div>{{comment.createdAt | date:'d/M/yy, h:mm a'}}</div>
+    <div *ngIf="getEditMode(comment.author.userName) === true">
+      <button mat-icon-button matTooltip="Edit a post" (click)="toggleEditMode()">
+        <mat-icon>edit</mat-icon>
+      </button>
+      </div>
   </mat-card-header>
   <mat-card-content>
     <p>{{comment.body}}</p>
@@ -20,4 +25,26 @@
       <mat-icon aria-label="Share">share</mat-icon>
     </button>
   </mat-card-actions>
+</mat-card>
+<mat-card *ngIf="this.commentEditMode === true">
+  <mat-card-header>
+    <img mat-card-avatar src="{{comment.author.avatar}}" alt="Avatar">
+    <mat-card-title>{{comment.author.userName}} </mat-card-title>
+    <div>{{comment.createdAt | date:'d/M/yy, h:mm a'}}</div>
+  </mat-card-header>
+  <form name="commentForm" #commentForm="ngForm" class="main-content">
+    <mat-form-field>
+        <textarea name="body" [(ngModel)]="comment.body" #body="ngModel" matInput placeholder="Text...">{{comment.body}}</textarea>
+    </mat-form-field>
+  </form>
+  <mat-card-actions class="actions-buttons" >
+    <div class="button">
+      <button mat-raised-button color="primary" (click)="saveEditedComment()">
+        Save
+      </button>
+      <button mat-raised-button (click)="toggleEditMode()">
+        Cancel
+      </button>
+  </div>
+</mat-card-actions>
 </mat-card>

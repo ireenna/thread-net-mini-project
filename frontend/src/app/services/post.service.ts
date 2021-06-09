@@ -24,7 +24,6 @@ export class PostService {
     }
 
     public updatePost(post: EditPost, id:number) {
-        alert(`${this.routePrefix}/`+id)
         return this.httpService.putFullRequest<Post>(`${this.routePrefix}/`+id, post);
     }
 

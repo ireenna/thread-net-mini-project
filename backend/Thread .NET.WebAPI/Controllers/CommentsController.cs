@@ -32,10 +32,9 @@ namespace Thread_.NET.WebAPI.Controllers
         }
 
         [HttpPut("{id}")]
-        [AllowAnonymous]
         public async Task<ActionResult<CommentDTO>> UpdateComment([FromBody] CommentUpdateDTO dto, [FromRoute] int id)
         {
-            int userId = 22;
+            int userId = this.GetUserIdFromToken();
 
             return Ok(await _commentService.UpdateComment(dto, id, userId));
         }

@@ -11,6 +11,7 @@ import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { Comment } from '../../models/comment/comment';
 import { empty, Observable} from 'rxjs';
 import { catchError} from 'rxjs/operators';
+import { EditComment } from 'src/app/models/comment/edit-comment';
 
 @Component({
     selector: 'app-comment',
@@ -19,8 +20,11 @@ import { catchError} from 'rxjs/operators';
 })
 export class CommentComponent implements OnDestroy {
     @Input() public comment: Comment;
-    @Input() public currentUser: User;
+    public currentUser: User;
+    @Input() public editedComment: EditComment;
+
     private unsubscribe$ = new Subject<void>();
+    public commentEditMode = false;
     
     public constructor(
         private authService: AuthenticationService,
@@ -45,7 +49,7 @@ export class CommentComponent implements OnDestroy {
         public openAuthDialog() {
             this.authDialogService.openAuthDialog(DialogType.SignIn);
         }
-        public toggleComments() {
+        public getCurrentUser() {
             if (!this.currentUser) {
                 this.catchErrorWrapper(this.authService.getUser())
                     .pipe(takeUntil(this.unsubscribe$))
@@ -57,6 +61,13 @@ export class CommentComponent implements OnDestroy {
                 return;
             }
         }
+        public getEditMode(authorName){
+            if(!this.currentUser){
+                this.getCurrentUser()
+            }
+            return authorName === this.currentUser.userName;
+        }
+
         public getLikes(){
             var filteredLikes = this.comment.reactions.filter(reactions => reactions.isLike == true)
             var countLikes = filteredLikes.length;
@@ -92,7 +103,7 @@ export class CommentComponent implements OnDestroy {
                         takeUntil(this.unsubscribe$)
                     )
                     .subscribe((comment) => (this.comment = comment));
-    
+                
                 return;
             }
     
@@ -100,5 +111,23 @@ export class CommentComponent implements OnDestroy {
                 .dislikeComment(this.comment, this.currentUser)
                 .pipe(takeUntil(this.unsubscribe$))
                 .subscribe((comment) => (this.comment = comment));
+        }
+        public toggleEditMode() {
+            this.commentEditMode = !this.commentEditMode;
+        }
+    
+        public saveEditedComment() {
+            this.editedComment = {body:this.comment.body};
+            const postEditing = this.commentService.updateComment(this.editedComment, this.comment.id);
+            
+            postEditing.pipe(takeUntil(this.unsubscribe$)).subscribe(
+                (resp) => {
+                    this.comment = resp.body;
+                    this.snackBarService.showUsualMessage('Successfully updated');
+                },
+                (error) => this.snackBarService.showErrorMessage(error)
+            );
+    
+            this.commentEditMode = false;
         }
 }
