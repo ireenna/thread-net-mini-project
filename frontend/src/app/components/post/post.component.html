@@ -3,7 +3,7 @@
     <img mat-card-avatar src="{{post.author.avatar}}" alt="Avatar">
     <mat-card-title>{{post.author.userName}}</mat-card-title>
     <div class="date">{{post.createdAt | date:'d/M/yy, h:mm a'}}</div>
-    <div *ngIf="post.author.userName === currentUser.userName">
+    <div *ngIf="currentUser && post.author.userName === currentUser.userName">
     <button mat-icon-button matTooltip="Edit a post" (click)="toggleEditMode()">
       <mat-icon>edit</mat-icon>
     </button>
@@ -15,14 +15,10 @@
   </mat-card-content>
   <mat-card-actions class="actions-buttons" align="end">
     <div class="users-liked" *ngIf="getUsersLikedPost()">
-      <div *ngIf="users.length <= 3">
-        <img mat-card-avatar *ngFor="let user of users" matTooltip="{{user.userName}}" src="{{user.avatar}}" alt="Avatar">
-      </div>
-      <div *ngIf="users.length > 3">
-        <img mat-card-avatar *ngFor="let user of users.slice(users.length-2,users.length)" matTooltip="{{user.userName}}" src="{{user.avatar}}" alt="Avatar">
-      </div>
-      <button *ngIf="users.length > 3" mat-mini-fab color="accent" aria-label="Icon button">+{{users.length-3}}</button>
-    </div>
+      
+        <img mat-card-avatar *ngFor="let user of this.users"matTooltip="{{user.userName}}" src="{{user.avatar}}" alt="Avatar">
+      
+  </div>
     <button mat-icon-button color="primary" (click)="likePost()">
       <mat-icon matBadge="{{getLikes()}}" matBadgeColor="accent" matBadgeSize="medium"
         [matBadgeHidden]="getLikes() === 0" aria-label="Like">favorite</mat-icon>
