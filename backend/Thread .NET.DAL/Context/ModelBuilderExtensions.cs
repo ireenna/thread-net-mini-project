@@ -1,14 +1,39 @@
 ﻿using Bogus;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 using Thread_.NET.Common.Security;
 using Thread_.NET.DAL.Entities;
 using Thread_.NET.DAL.Entities.Abstract;
 
 namespace Thread_.NET.DAL.Context
 {
+    public static class SoftDeleteQueryExtension
+    {
+        public static void AddSoftDeleteQueryFilter(
+            this IMutableEntityType entityData)
+        {
+            var methodToCall = typeof(SoftDeleteQueryExtension)
+                .GetMethod(nameof(GetSoftDeleteFilter),
+                    BindingFlags.NonPublic | BindingFlags.Static)
+                .MakeGenericMethod(entityData.ClrType);
+            var filter = methodToCall.Invoke(null, new object[] { });
+            entityData.SetQueryFilter((LambdaExpression)filter);
+            entityData.AddIndex(entityData.
+                 FindProperty(nameof(ISoftDeleted.IsDeleted)));
+        }
+
+        private static LambdaExpression GetSoftDeleteFilter<TEntity>()
+            where TEntity : class, ISoftDeleted
+        {
+            Expression<Func<TEntity, bool>> filter = x => !x.IsDeleted;
+            return filter;
+        }
+    }
     public static class ModelBuilderExtensions
     {
         private const int ENTITY_COUNT = 20;
@@ -34,16 +59,19 @@ namespace Thread_.NET.DAL.Context
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Post>()
+                .HasQueryFilter(p => !p.IsDeleted)
                 .HasMany(p => p.Comments)
                 .WithOne(c => c.Post)
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Post>()
+                .HasQueryFilter(p => !p.IsDeleted)
                 .HasOne(p => p.Preview)
                 .WithMany()
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Post>()
+                .HasQueryFilter(p=>!p.IsDeleted)
                 .HasMany(p => p.Reactions)
                 .WithOne(r => r.Post)
                 .HasForeignKey(r => r.PostId);
@@ -52,6 +80,15 @@ namespace Thread_.NET.DAL.Context
                 .HasMany(p => p.Reactions)
                 .WithOne(r => r.Comment)
                 .HasForeignKey(r => r.CommentId);
+
+            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+            {
+                //other automated configurations left out
+                if (typeof(ISoftDeleted).IsAssignableFrom(entityType.ClrType))
+                {
+                    entityType.AddSoftDeleteQueryFilter();
+                }
+            }
         }
 
         public static void Seed(this ModelBuilder modelBuilder)

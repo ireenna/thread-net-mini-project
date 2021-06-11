@@ -47,6 +47,14 @@ namespace Thread_.NET.WebAPI.Controllers
 
             return Ok(await _postService.CreatePost(dto));
         }
+        [HttpDelete("{id}")]
+        [AllowAnonymous]
+        public async Task<ActionResult<PostDTO>> DeletePost([FromRoute] int id)
+        {
+            var userId = 22;
+
+            return Ok(await _postService.DeletePost(id,userId));
+        }
 
         [HttpPut("{id}")]
         public async Task<ActionResult<PostDTO>> UpdatePost([FromBody] PostUpdateDTO dto, [FromRoute] int id)

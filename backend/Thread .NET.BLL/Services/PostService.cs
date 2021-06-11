@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Thread_.NET.BLL.Exceptions;
 using Thread_.NET.BLL.Hubs;
 using Thread_.NET.BLL.Services.Abstract;
 using Thread_.NET.Common.DTO.Comment;
@@ -120,40 +121,23 @@ namespace Thread_.NET.BLL.Services
             return updatedPostDTO;
         }
 
-        public async Task<PostDTO> DeletePost(Post s, Comment d, int postId, int userId)
+        public async Task<PostDTO> DeletePost(int postId, int userId)
         {
-            //_mapper.Map<PostDTO,CommentDTO>(s,d).EqualityComparison((s, d) => s.PatientFileId == d.PatientFileId && s.PartnerFileId == d.PartnerFileId);
+            var entity = await _context.Posts.Where(x => x.Id == postId).FirstOrDefaultAsync();
 
+            if (entity is null)
+                throw new NotFoundException("Post", postId);
 
-            var patientPartnersModelDataList = _mapper.Map<List<Post>, List<Comment>>(_context.Posts.ToList(), _context.Comments.ToList());
-
-            var partnerRegistryToRemoveList = _context.Comments.ToList().Remove(patientPartnersModelDataList);
-            
-
-            var findedPost = await _context.Posts.Where(x => x.Id == postId).FirstOrDefaultAsync();
-
-            if (findedPost != null && findedPost.AuthorId == userId)
+            if (userId == entity.AuthorId)
             {
-                findedPost.Body = postUpdateDto.Body;
-                findedPost.UpdatedAt = System.DateTime.Now;
+                entity.IsDeleted = true;
                 await _context.SaveChangesAsync();
+                var deletedPostDTO = _mapper.Map<PostDTO>(entity);
+                await _postHub.Clients.All.SendAsync("DeletePost", deletedPostDTO);
+                return deletedPostDTO;
             }
 
-            var updatedPost = await _context.Posts
-                .Include(post => post.Author)
-                    .ThenInclude(author => author.Avatar)
-                .Include(post => post.Preview)
-                .Include(post => post.Comments)
-                    .ThenInclude(comment => comment.Author)
-                .Include(post => post.Comments)
-                    .ThenInclude(comment => comment.Reactions)
-                .Include(post => post.Reactions)
-                .FirstAsync(post => post.Id == findedPost.Id);
-
-            var updatedPostDTO = _mapper.Map<PostDTO>(updatedPost);
-            await _postHub.Clients.All.SendAsync("UpdatedPost", updatedPostDTO);
-
-            return updatedPostDTO;
+            throw new System.Exception();
         }
     }
 }
