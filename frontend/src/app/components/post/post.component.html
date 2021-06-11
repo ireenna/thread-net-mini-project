@@ -14,8 +14,14 @@
     <p>{{post.body}}</p>
   </mat-card-content>
   <mat-card-actions class="actions-buttons" align="end">
-    <div *ngIf="getUsersLikedPost()">
-      <img mat-card-avatar *ngFor="let user of getUsersLikedPost()" matTooltip="{{user.userName}}" src="{{user.avatar}}" alt="Avatar">
+    <div class="users-liked" *ngIf="getUsersLikedPost()">
+      <div *ngIf="users.length <= 3">
+        <img mat-card-avatar *ngFor="let user of users" matTooltip="{{user.userName}}" src="{{user.avatar}}" alt="Avatar">
+      </div>
+      <div *ngIf="users.length > 3">
+        <img mat-card-avatar *ngFor="let user of users.slice(users.length-2,users.length)" matTooltip="{{user.userName}}" src="{{user.avatar}}" alt="Avatar">
+      </div>
+      <button *ngIf="users.length > 3" mat-mini-fab color="accent" aria-label="Icon button">+{{users.length-3}}</button>
     </div>
     <button mat-icon-button color="primary" (click)="likePost()">
       <mat-icon matBadge="{{getLikes()}}" matBadgeColor="accent" matBadgeSize="medium"
