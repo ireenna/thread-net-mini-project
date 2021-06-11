@@ -25,6 +25,7 @@ export class CommentComponent implements OnDestroy {
 
     private unsubscribe$ = new Subject<void>();
     public commentEditMode = false;
+    public users: User[]=[];
     
     public constructor(
         private authService: AuthenticationService,
@@ -129,5 +130,10 @@ export class CommentComponent implements OnDestroy {
             );
     
             this.commentEditMode = false;
+        }
+        public getUsersLikedComment(){
+            this.users=[]
+            this.comment.reactions.filter(reactions => reactions.isLike == true).forEach(r => this.users.push(r.user))
+            return this.users
         }
 }

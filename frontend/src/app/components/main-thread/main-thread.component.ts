@@ -149,7 +149,7 @@ export class MainThreadComponent implements OnInit, OnDestroy {
             );
         } else {
             this.isLikedByMe = false;
-            this.getPosts(); //this works longer but correct
+            this.getPosts();
             //this.posts = this.cachedPosts; //for actual data you need to reload the page
         }
     }

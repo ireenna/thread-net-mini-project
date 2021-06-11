@@ -13,6 +13,7 @@ namespace Thread_.NET.Common.DTO.Post
         public UserDTO Author { get; set; }
         public string PreviewImage { get; set; }
         public string Body { get; set; }
+        public bool isDeleted { get; set; }
 
         public ICollection<CommentDTO> Comments { get; set; }
         public ICollection<ReactionDTO> Reactions { get; set; }

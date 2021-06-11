@@ -28,7 +28,7 @@ export class PostComponent implements OnDestroy {
     public newComment = {} as NewComment;
     public postEditMode = false;
     public loading = false;
-    public users: User[]=[];
+    public users: User[] = [];
 
     private unsubscribe$ = new Subject<void>();
 
@@ -167,16 +167,7 @@ export class PostComponent implements OnDestroy {
     }
     public getUsersLikedPost(){
         this.users=[]
-        this.post.reactions.filter(reactions => reactions.isLike == true).forEach(r=>this.users.push(r.user))
+        this.post.reactions.filter(reactions => reactions.isLike == true).forEach(r => this.users.push(r.user))
         return this.users
-        // this.post.reactions.forEach(r=>this.users.push(r.userName))
-        // return this.users
-        // const reactionsLikes = this.postService.getPostLikes(this.post.id);
-        // reactionsLikes.subscribe(
-        //     (resp) => {
-        //         this.reactions = resp.body;
-        //     },
-        //     (error) => this.snackBarService.showErrorMessage(error)
-        // );
     }
 }
