@@ -13,6 +13,7 @@ import { catchError, switchMap, takeUntil } from 'rxjs/operators';
 import { SnackBarService } from '../../services/snack-bar.service';
 import { PostService } from 'src/app/services/post.service';
 import { EditPost } from 'src/app/models/post/edit-post';
+import { Reaction } from 'src/app/models/reactions/reaction';
 
 @Component({
     selector: 'app-post',
@@ -27,6 +28,7 @@ export class PostComponent implements OnDestroy {
     public newComment = {} as NewComment;
     public postEditMode = false;
     public loading = false;
+    public users: User[]=[];
 
     private unsubscribe$ = new Subject<void>();
 
@@ -68,7 +70,7 @@ export class PostComponent implements OnDestroy {
                     takeUntil(this.unsubscribe$)
                 )
                 .subscribe((post) => (this.post = post));
-
+            
             return;
         }
 
@@ -76,7 +78,10 @@ export class PostComponent implements OnDestroy {
             .likePost(this.post, this.currentUser)
             .pipe(takeUntil(this.unsubscribe$))
             .subscribe((post) => (this.post = post));
+
+    
     }
+
     public dislikePost() {
         if (!this.currentUser) {
             this.catchErrorWrapper(this.authService.getUser())
@@ -97,6 +102,7 @@ export class PostComponent implements OnDestroy {
     public getLikes(){
         var filteredLikes = this.post.reactions.filter(reactions => reactions.isLike == true)
         var countLikes = filteredLikes.length;
+        
         return countLikes;
     }
     public getDislikes(){
@@ -158,5 +164,19 @@ export class PostComponent implements OnDestroy {
         );
 
         this.postEditMode = false;
+    }
+    public getUsersLikedPost(){
+        this.users=[]
+        this.post.reactions.filter(reactions => reactions.isLike == true).forEach(r=>this.users.push(r.user))
+        return this.users
+        // this.post.reactions.forEach(r=>this.users.push(r.userName))
+        // return this.users
+        // const reactionsLikes = this.postService.getPostLikes(this.post.id);
+        // reactionsLikes.subscribe(
+        //     (resp) => {
+        //         this.reactions = resp.body;
+        //     },
+        //     (error) => this.snackBarService.showErrorMessage(error)
+        // );
     }
 }

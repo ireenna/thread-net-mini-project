@@ -40,6 +40,13 @@ namespace Thread_.NET.WebAPI.Controllers
             return Ok(await _postService.GetAllLikedPosts(userId));
         }
 
+        //[HttpGet("{id}/likes")]
+        //[AllowAnonymous]
+        //public async Task<ActionResult<ICollection<PostDTO>>> GetUsersLikedPost([FromRoute] int id)
+        //{
+        //    return Ok(await _postService.GetUsersLikedPost(id));
+        //}
+
         [HttpPost]
         public async Task<ActionResult<PostDTO>> CreatePost([FromBody] PostCreateDTO dto)
         {

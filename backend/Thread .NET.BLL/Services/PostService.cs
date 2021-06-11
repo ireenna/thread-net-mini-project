@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Thread_.NET.BLL.Hubs;
 using Thread_.NET.BLL.Services.Abstract;
+using Thread_.NET.Common.DTO.Like;
 using Thread_.NET.Common.DTO.Post;
 using Thread_.NET.DAL.Context;
 using Thread_.NET.DAL.Entities;
@@ -52,6 +53,16 @@ namespace Thread_.NET.BLL.Services
 
             return _mapper.Map<ICollection<PostDTO>>(posts);
         }
+        //public async Task<ICollection<ReactionDTO>> GetUsersLikedPost(int postid)
+        //{
+        //    var postReactions = await _context.PostReactions
+        //        .Include(reactions => reactions.User)
+        //        .ThenInclude(user=>user.Avatar)
+        //        .Where(p => p.PostId == postid && p.IsLike) // Filter here
+        //        .ToListAsync();
+
+        //    return _mapper.Map<ICollection<ReactionDTO>>(postReactions);
+        //}
 
         public async Task<ICollection<PostDTO>> GetAllLikedPosts(int userId)
         {
