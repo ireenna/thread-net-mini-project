@@ -17,13 +17,13 @@
     <p>{{post.body}}</p>
   </mat-card-content>
   <mat-card-actions class="actions-buttons" align="end">
-    <div class="users-liked" *ngIf="getUsersLikedPost()">
-      <div *ngIf="users.length <= 3">
+    <div class="users-liked" *ngIf="getUsersLikedPost()" (click)="openLikedDialog()">
+      <div *ngIf="users.length <= shownUsers">
         <img mat-card-avatar *ngFor="let user of users" src="{{user.avatar}}" alt="Avatar" matTooltip="{{user.userName}}" >
       </div>
-      <div *ngIf="users.length > 3">
-        <img mat-card-avatar *ngFor="let user of users.slice(users.length-3,users.length)" matTooltip="{{user.userName}}" src="{{user.avatar}}" alt="Avatar">
-        <span matBadge="+{{users.length-3}}" matBadgePosition="after" matBadgeColor="accent"></span>
+      <div *ngIf="users.length > shownUsers">
+        <img mat-card-avatar *ngFor="let user of users.slice(users.length-shownUsers,users.length)" matTooltip="{{user.userName}}" src="{{user.avatar}}" alt="Avatar">
+        <span matBadge="+{{users.length-shownUsers}}" matBadgePosition="after" matBadgeColor="accent"></span>
       </div>
   </div>
     <button mat-icon-button color="primary" (click)="likePost()">
@@ -33,6 +33,9 @@
     <button mat-icon-button color="primary" (click)="dislikePost()">
       <mat-icon matBadge="{{getDislikes()}}" matBadgeColor="accent" matBadgeSize="medium"
         [matBadgeHidden]="getDislikes() === 0" aria-label="Dislike">thumb_down</mat-icon>
+    </button>
+    <button mat-icon-button color="primary" (click)="openLikedDialog()">
+      <mat-icon matTooltip="Show info (likes & dislikes)" aria-label="Info">poll</mat-icon>
     </button>
     <button mat-icon-button color="accent">
       <mat-icon aria-label="Share">share</mat-icon>

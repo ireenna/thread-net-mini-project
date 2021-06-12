@@ -17,12 +17,12 @@
   </mat-card-content>
   <mat-card-actions class="actions-buttons" align="end">
     <div class="users-liked" *ngIf="getUsersLikedComment()">
-      <div *ngIf="users.length <= 3">
+      <div *ngIf="users.length <= shownUsers">
         <img mat-card-avatar *ngFor="let user of users" src="{{user.avatar}}" alt="Avatar" matTooltip="{{user.userName}}" >
       </div>
-      <div *ngIf="users.length > 3">
-        <img mat-card-avatar *ngFor="let user of users.slice(users.length-3,users.length)" matTooltip="{{user.userName}}" src="{{user.avatar}}" alt="Avatar">
-        <span matBadge="+{{users.length-3}}" matBadgePosition="after" matBadgeColor="accent"></span>
+      <div *ngIf="users.length > shownUsers">
+        <img mat-card-avatar *ngFor="let user of users.slice(users.length-shownUsers,users.length)" matTooltip="{{user.userName}}" src="{{user.avatar}}" alt="Avatar">
+        <span matBadge="+{{users.length-shownUsers}}" matBadgePosition="after" matBadgeColor="accent"></span>
       </div>
   </div>
     <button mat-icon-button color="primary" (click)="likeComment()">

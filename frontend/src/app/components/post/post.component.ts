@@ -14,6 +14,7 @@ import { SnackBarService } from '../../services/snack-bar.service';
 import { PostService } from 'src/app/services/post.service';
 import { EditPost } from 'src/app/models/post/edit-post';
 import { Reaction } from 'src/app/models/reactions/reaction';
+import { ReactionDialogService } from 'src/app/services/reaction-dialog.service';
 
 @Component({
     selector: 'app-post',
@@ -30,6 +31,7 @@ export class PostComponent implements OnDestroy {
     public loading = false;
     public isDeleted = false;
     public users: User[] = [];
+    public shownUsers = 3;
 
     private unsubscribe$ = new Subject<void>();
 
@@ -39,7 +41,8 @@ export class PostComponent implements OnDestroy {
         private likeService: LikeService,
         private commentService: CommentService,
         private snackBarService: SnackBarService,
-        private postService: PostService
+        private postService: PostService,
+        private reactionDialogService: ReactionDialogService
     ) {}
 
     public ngOnDestroy() {
@@ -183,5 +186,8 @@ export class PostComponent implements OnDestroy {
                 (error) => this.snackBarService.showErrorMessage(error)
             );
         }
+    }
+    public openLikedDialog() {
+        this.reactionDialogService.openReactionDialog(this.post.reactions);
     }
 }

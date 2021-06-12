@@ -27,6 +27,7 @@ export class CommentComponent implements OnDestroy {
     public commentEditMode = false;
     public isDeleted = false;
     public users: User[]=[];
+    public shownUsers = 3;
     
     public constructor(
         private authService: AuthenticationService,
