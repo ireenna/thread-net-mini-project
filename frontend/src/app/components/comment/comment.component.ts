@@ -12,6 +12,7 @@ import { Comment } from '../../models/comment/comment';
 import { empty, Observable} from 'rxjs';
 import { catchError} from 'rxjs/operators';
 import { EditComment } from 'src/app/models/comment/edit-comment';
+import { ReactionDialogService } from 'src/app/services/reaction-dialog.service';
 
 @Component({
     selector: 'app-comment',
@@ -34,7 +35,8 @@ export class CommentComponent implements OnDestroy {
         private authDialogService: AuthDialogService,
         private likeService: LikeService,
         private commentService: CommentService,
-        private snackBarService: SnackBarService
+        private snackBarService: SnackBarService,
+        private reactionDialogService: ReactionDialogService
     ) {}
     
         public ngOnDestroy() {
@@ -150,5 +152,8 @@ export class CommentComponent implements OnDestroy {
                     (error) => this.snackBarService.showErrorMessage(error)
                 );
             }
+        }
+        public openLikedDialog() {
+            this.reactionDialogService.openReactionDialog(this.comment.reactions);
         }
 }
