@@ -1,12 +1,15 @@
-<mat-card *ngIf="!this.postEditMode" [ngClass]="{'post-with-comments': showComments}">
+<mat-card *ngIf="!this.postEditMode && !this.isDeleted" [ngClass]="{'post-with-comments': showComments}">
   <mat-card-header>
     <img mat-card-avatar src="{{post.author.avatar}}" alt="Avatar">
     <mat-card-title>{{post.author.userName}}</mat-card-title>
     <div class="date">{{post.createdAt | date:'d/M/yy, h:mm a'}}</div>
     <div *ngIf="currentUser && post.author.userName === currentUser.userName">
-    <button mat-icon-button matTooltip="Edit a post" (click)="toggleEditMode()">
-      <mat-icon>edit</mat-icon>
-    </button>
+      <button mat-icon-button matTooltip="Edit a post" (click)="toggleEditMode()">
+        <mat-icon>edit</mat-icon>
+      </button>
+      <button mat-icon-button matTooltip="Delete a post" (click)="deletePost()">
+        <mat-icon>close</mat-icon>
+      </button>
     </div>
   </mat-card-header>
   <img mat-card-image *ngIf="post.previewImage" mat-card-image src="{{post.previewImage}}" alt="Photo">

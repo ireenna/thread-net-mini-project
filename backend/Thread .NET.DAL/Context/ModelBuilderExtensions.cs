@@ -43,17 +43,21 @@ namespace Thread_.NET.DAL.Context
             modelBuilder.Entity<RefreshToken>().Ignore(t => t.IsActive);
 
             modelBuilder.Entity<PostReaction>()
+                .HasQueryFilter(p => !p.IsDeleted)
                 .HasAlternateKey(pr => new { pr.PostId, pr.UserId });
 
             modelBuilder.Entity<PostReaction>()
+                .HasQueryFilter(p => !p.IsDeleted)
                 .HasOne(pr => pr.Post)
                 .WithMany()
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<CommentReaction>()
+                .HasQueryFilter(p => !p.IsDeleted)
                 .HasAlternateKey(cr => new { cr.CommentId, cr.UserId });
 
             modelBuilder.Entity<CommentReaction>()
+                .HasQueryFilter(p => !p.IsDeleted)
                 .HasOne(cr => cr.Comment)
                 .WithMany()
                 .OnDelete(DeleteBehavior.Restrict);
@@ -77,6 +81,7 @@ namespace Thread_.NET.DAL.Context
                 .HasForeignKey(r => r.PostId);
 
             modelBuilder.Entity<Comment>()
+                .HasQueryFilter(p => !p.IsDeleted)
                 .HasMany(p => p.Reactions)
                 .WithOne(r => r.Comment)
                 .HasForeignKey(r => r.CommentId);

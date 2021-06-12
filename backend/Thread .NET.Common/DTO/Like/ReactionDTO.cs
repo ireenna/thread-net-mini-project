@@ -7,5 +7,6 @@ namespace Thread_.NET.Common.DTO.Like
         public bool IsLike { get; set; }
         public bool IsDislike { get; set; }
         public UserDTO User { get; set; }
+        public bool isDeleted { get; set; }
     }
 }

@@ -28,6 +28,7 @@ export class PostComponent implements OnDestroy {
     public newComment = {} as NewComment;
     public postEditMode = false;
     public loading = false;
+    public isDeleted = false;
     public users: User[] = [];
 
     private unsubscribe$ = new Subject<void>();
@@ -169,5 +170,18 @@ export class PostComponent implements OnDestroy {
         this.users=[]
         this.post.reactions.filter(reactions => reactions.isLike == true).forEach(r => this.users.push(r.user))
         return this.users
+    }
+    public deletePost(){
+        if(this.post.author.id === this.currentUser.id){
+           this.postService.deletePost(this.post.id)
+           .pipe(takeUntil(this.unsubscribe$))
+           .subscribe(
+                () => {
+                    this.snackBarService.showUsualMessage('Successfully deleted');
+                    this.isDeleted = true;
+                },
+                (error) => this.snackBarService.showErrorMessage(error)
+            );
+        }
     }
 }

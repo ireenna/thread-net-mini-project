@@ -1,11 +1,12 @@
 ﻿namespace Thread_.NET.DAL.Entities.Abstract
 {
-    public abstract class Reaction : BaseEntity
+    public abstract class Reaction : BaseEntity, ISoftDeleted
     {
         public int UserId { get; set; }
         public User User { get; set; }
 
         public bool IsLike { get; set; }
         public bool IsDislike { get; set; }
+        public bool IsDeleted { get; set; }
     }
 }

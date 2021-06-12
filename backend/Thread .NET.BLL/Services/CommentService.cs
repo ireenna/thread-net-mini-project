@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
+using Thread_.NET.BLL.Exceptions;
 using Thread_.NET.BLL.Services.Abstract;
 using Thread_.NET.Common.DTO.Comment;
 using Thread_.NET.DAL.Context;
@@ -48,6 +49,30 @@ namespace Thread_.NET.BLL.Services
             var updatedCommentDTO = _mapper.Map<CommentDTO>(updatedComment);
 
             return updatedCommentDTO;
+        }
+        public async Task<CommentDTO> DeleteComment(int commentId, int userId)
+        {
+            var comment = await _context.Comments.Where(x => x.Id == commentId).FirstOrDefaultAsync();
+
+            if (comment is null)
+                throw new NotFoundException("Comment", commentId);
+
+            var commentReactions = await _context.CommentReactions.Where(x => x.CommentId == commentId).ToListAsync();
+
+            if (userId == comment.AuthorId)
+            {
+                comment.IsDeleted = true;
+
+                foreach (var pr in commentReactions)
+                    pr.IsDeleted = true;
+
+                await _context.SaveChangesAsync();
+
+                var deletedCommentDTO = _mapper.Map<CommentDTO>(comment);
+                return deletedCommentDTO;
+            }
+
+            throw new System.Exception();
         }
     }
 }

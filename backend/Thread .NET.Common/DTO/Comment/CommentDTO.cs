@@ -11,6 +11,7 @@ namespace Thread_.NET.Common.DTO.Comment
         public DateTime CreatedAt { get; set; }
         public UserDTO Author { get; set; }
         public string Body { get; set; }
+        public bool isDeleted { get; set; }
 
         public ICollection<ReactionDTO> Reactions { get; set; }
     }

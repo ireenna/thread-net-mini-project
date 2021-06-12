@@ -20,9 +20,9 @@ export class PostService {
         return this.httpService.getFullRequest<Post[]>(`${this.routePrefix}/liked`);
     }
 
-    // public getPostLikes(id: number) {
-    //     return this.httpService.getFullRequest<Reaction[]>(`${this.routePrefix}/${id}/likes`);
-    // }
+    public deletePost(id: number) {
+        return this.httpService.deleteFullRequest<Post>(`${this.routePrefix}/${id}`);
+    }
 
     public createPost(post: NewPost) {
         return this.httpService.postFullRequest<Post>(`${this.routePrefix}`, post);

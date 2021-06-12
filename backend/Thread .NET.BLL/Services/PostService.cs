@@ -123,16 +123,27 @@ namespace Thread_.NET.BLL.Services
 
         public async Task<PostDTO> DeletePost(int postId, int userId)
         {
-            var entity = await _context.Posts.Where(x => x.Id == postId).FirstOrDefaultAsync();
-
-            if (entity is null)
+            var post = await _context.Posts.Where(x => x.Id == postId).FirstOrDefaultAsync();
+            
+            if (post is null)
                 throw new NotFoundException("Post", postId);
 
-            if (userId == entity.AuthorId)
+            var postReactions = await _context.PostReactions.Where(x => x.PostId == postId).ToListAsync();
+            var comments = await _context.Comments.Where(x => x.PostId == postId).ToListAsync();
+
+            if (userId == post.AuthorId)
             {
-                entity.IsDeleted = true;
+                post.IsDeleted = true;
+
+                foreach (var pr in postReactions)
+                    pr.IsDeleted = true;
+
+                foreach (var c in comments)
+                    c.IsDeleted = true;
+
                 await _context.SaveChangesAsync();
-                var deletedPostDTO = _mapper.Map<PostDTO>(entity);
+
+                var deletedPostDTO = _mapper.Map<PostDTO>(post);
                 await _postHub.Clients.All.SendAsync("DeletePost", deletedPostDTO);
                 return deletedPostDTO;
             }
