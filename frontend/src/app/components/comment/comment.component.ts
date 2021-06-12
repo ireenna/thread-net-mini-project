@@ -25,6 +25,7 @@ export class CommentComponent implements OnDestroy {
 
     private unsubscribe$ = new Subject<void>();
     public commentEditMode = false;
+    public isDeleted = false;
     public users: User[]=[];
     
     public constructor(
@@ -135,5 +136,18 @@ export class CommentComponent implements OnDestroy {
             this.users=[]
             this.comment.reactions.filter(reactions => reactions.isLike == true).forEach(r => this.users.push(r.user))
             return this.users
+        }
+        public deleteComment(){
+            if(this.comment.author.id === this.currentUser.id){
+               this.commentService.deleteComment(this.comment.id)
+               .pipe(takeUntil(this.unsubscribe$))
+               .subscribe(
+                    () => {
+                        this.snackBarService.showUsualMessage('Successfully deleted');
+                        this.isDeleted = true;
+                    },
+                    (error) => this.snackBarService.showErrorMessage(error)
+                );
+            }
         }
 }

@@ -1,11 +1,14 @@
-<mat-card *ngIf="this.commentEditMode === false">
+<mat-card *ngIf="!this.commentEditMode && !this.isDeleted">
   <mat-card-header>
     <img mat-card-avatar src="{{comment.author.avatar}}" alt="Avatar">
     <mat-card-title>{{comment.author.userName}} </mat-card-title>
     <div>{{comment.createdAt | date:'d/M/yy, h:mm a'}}</div>
     <div *ngIf="getEditMode(comment.author.userName) === true">
-      <button mat-icon-button matTooltip="Edit a post" (click)="toggleEditMode()">
+      <button mat-icon-button matTooltip="Edit a comment" (click)="toggleEditMode()">
         <mat-icon>edit</mat-icon>
+      </button>
+      <button mat-icon-button matTooltip="Delete a comment" (click)="deleteComment()">
+        <mat-icon>close</mat-icon>
       </button>
       </div>
   </mat-card-header>

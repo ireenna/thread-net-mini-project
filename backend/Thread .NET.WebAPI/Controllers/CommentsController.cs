@@ -38,6 +38,13 @@ namespace Thread_.NET.WebAPI.Controllers
 
             return Ok(await _commentService.UpdateComment(dto, id, userId));
         }
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<CommentDTO>> DeleteComment([FromRoute] int id)
+        {
+            var userId = this.GetUserIdFromToken();
+
+            return Ok(await _commentService.DeleteComment(id, userId));
+        }
 
         [HttpPost("like")]
         public async Task<IActionResult> LikeComment(NewReactionDTO reaction)

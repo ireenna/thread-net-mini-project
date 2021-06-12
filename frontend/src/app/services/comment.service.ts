@@ -17,6 +17,9 @@ export class CommentService {
     public updateComment(comment: EditComment, id:number) {
         return this.httpService.putFullRequest<Comment>(`${this.routePrefix}/`+id, comment);
     }
+    public deleteComment(id: number) {
+        return this.httpService.deleteFullRequest<Comment>(`${this.routePrefix}/${id}`);
+    }
     public likeComment(reaction: NewReaction) {
         return this.httpService.postFullRequest<Comment>(`${this.routePrefix}/like`, reaction);
     }
