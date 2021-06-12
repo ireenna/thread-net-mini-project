@@ -23,6 +23,7 @@ export class CommentComponent implements OnDestroy {
     @Input() public comment: Comment;
     public currentUser: User;
     @Input() public editedComment: EditComment;
+    public cachedCommentBody: string;
 
     private unsubscribe$ = new Subject<void>();
     public commentEditMode = false;
@@ -118,7 +119,12 @@ export class CommentComponent implements OnDestroy {
                 .subscribe((comment) => (this.comment = comment));
         }
         public toggleEditMode() {
+            this.cachedCommentBody = this.comment.body;
             this.commentEditMode = !this.commentEditMode;
+        }
+        public cancelEditing(){
+            this.comment.body = this.cachedCommentBody;
+            this.toggleEditMode();
         }
     
         public saveEditedComment() {

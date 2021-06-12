@@ -25,6 +25,7 @@ export class PostComponent implements OnDestroy {
     @Input() public post: Post;
     @Input() public currentUser: User;
     @Input() public editedPost: EditPost;
+    public cachedBody: string;
     public showComments = false;
     public newComment = {} as NewComment;
     public postEditMode = false;
@@ -32,6 +33,7 @@ export class PostComponent implements OnDestroy {
     public isDeleted = false;
     public users: User[] = [];
     public shownUsers = 3;
+    public imageFile: File;
 
     private unsubscribe$ = new Subject<void>();
 
@@ -150,7 +152,12 @@ export class PostComponent implements OnDestroy {
     }
 
     public toggleEditMode() {
+        this.cachedBody = this.post.body;
         this.postEditMode = !this.postEditMode;
+    }
+    public cancelEditing() {
+        this.post.body = this.cachedBody;
+        this.toggleEditMode();
     }
 
     public saveEditedPost() {
@@ -190,4 +197,22 @@ export class PostComponent implements OnDestroy {
     public openLikedDialog() {
         this.reactionDialogService.openReactionDialog(this.post.reactions);
     }
+    // public handleFileInput(target: any) {
+    //     this.imageFile = target.files[0];
+
+    //     if (!this.imageFile) {
+    //         target.value = '';
+    //         return;
+    //     }
+
+    //     if (this.imageFile.size / 1000000 > 5) {
+    //         this.snackBarService.showErrorMessage(`Image can't be heavier than ~5MB`);
+    //         target.value = '';
+    //         return;
+    //     }
+
+    //     const reader = new FileReader();
+    //     reader.addEventListener('load', () => (this.post.previewImage = reader.result as string));
+    //     reader.readAsDataURL(this.imageFile);
+    // }
 }

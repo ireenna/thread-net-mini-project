@@ -50,7 +50,7 @@ mat-card-content
     .mat-icon
         font-size: 30px
 
-.button
+.buttons
     display: flex
     width: 100%
     justify-content: left
@@ -81,3 +81,27 @@ mat-icon
     text-align: center
     color: rgba(0, 0, 0, 0.5)
     margin-bottom: 5px
+
+.avatar-container
+    position: relative
+    &:hover
+        img
+            opacity: 0.7
+        .img-text
+            opacity: 1
+
+.img-text
+    transition: .9s ease
+    opacity: 0
+    position: absolute
+    top: 50%
+    left: 50%
+    transform: translate(-50%, -50%)
+    -ms-transform: translate(-50%, -50%)
+    text-align: center
+    cursor: pointer
+    font-size: 40px
+    color: #1a1a1a
+
+.mat-spinner-wrapper 
+    margin: -16px
