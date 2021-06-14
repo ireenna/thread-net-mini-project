@@ -10,8 +10,6 @@ import { Reaction } from '../models/reactions/reaction';
 
 @Injectable({ providedIn: 'root' })
 export class ReactionDialogService {
-    private unsubscribe$ = new Subject<void>();
-
     public constructor(private dialog: MatDialog) {}
 
     public openReactionDialog(type: Reaction[]) {

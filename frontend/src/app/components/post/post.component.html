@@ -69,12 +69,11 @@
   </mat-card-header>
   <div class="avatar-container" (click)="file.click()">
     <input hidden class="file-hide" #file accept="image/*" type="file" (change)="handleFileInput($event.target)">
-    <img class="avatar avatar-style" src="{{post.previewImage}}" alt="Here should be a photo">
+    <img mat-card-image *ngIf="post.previewImage" mat-card-image src="{{post.previewImage}}" alt="Photo">
     <div class="img-text">
       Upload
     </div>
   </div>
-  <!-- <img mat-card-image *ngIf="post.previewImage" mat-card-image src="{{post.previewImage}}" alt="Photo"> -->
   <form name="postForm" #postForm="ngForm" class="main-content">
     <mat-form-field>
         <textarea name="body" [(ngModel)]="post.body" #body="ngModel" matInput placeholder="Text...">{{post.body}}</textarea>

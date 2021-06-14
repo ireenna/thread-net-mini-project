@@ -20,7 +20,7 @@ namespace Thread_.NET.BLL.Services
         {
             var emailMessage = new MimeMessage();
 
-            emailMessage.From.Add(new MailboxAddress("Thread.NET", "somebusinessmail57@gmail.com"));
+            emailMessage.From.Add(new MailboxAddress("Thread.NET", "email"));
             emailMessage.To.Add(new MailboxAddress("", dto.Email));
             emailMessage.Subject = $"{dto.User?.UserName ?? "Someone"} shares with you a post!";
 
@@ -33,7 +33,7 @@ namespace Thread_.NET.BLL.Services
             using (var client = new SmtpClient())
             {
                 await client.ConnectAsync("smtp.gmail.com", 465, true);
-                await client.AuthenticateAsync("somebusinessmail57@gmail.com", "403138138403");
+                await client.AuthenticateAsync("email", "password");
                 await client.SendAsync(emailMessage);
 
                 await client.DisconnectAsync(true);

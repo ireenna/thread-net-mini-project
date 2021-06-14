@@ -26,11 +26,6 @@ export class ShareDialogService implements OnDestroy {
                 top: '0'
             }
         });
-        // dialog.afterClosed().subscribe((result:Email) => {
-        //     if(result){
-        //         this.postService.sharePostByMail(result);
-        //     }
-        //   });
     }
 
     public ngOnDestroy() {

@@ -95,13 +95,42 @@ namespace Thread_.NET.BLL.Services
         }
         public async Task<PostDTO> UpdatePost(PostUpdateDTO postUpdateDto, int postId, int userId)
         {
+
             var findedPost = await _context.Posts.Where(x => x.Id == postId).FirstOrDefaultAsync();
 
             if (findedPost != null && findedPost.AuthorId == userId)
             {
+                
                 findedPost.Body = postUpdateDto.Body;
                 findedPost.UpdatedAt = System.DateTime.Now;
+                if (!string.IsNullOrEmpty(postUpdateDto.PreviewImage))
+                {
+                    if (findedPost.Preview == null)
+                    {
+                        findedPost.Preview = new Image
+                        {
+                            URL = postUpdateDto.PreviewImage
+                        };
+                    }
+                    else
+                    {
+                        findedPost.Preview.URL = postUpdateDto.PreviewImage;
+                        findedPost.Preview.UpdatedAt = System.DateTime.Now;
+                    }
+                }
+                else
+                {
+                    if (findedPost.Preview != null)
+                    {
+                        _context.Images.Remove(findedPost.Preview);
+                    }
+                }
+                _context.Posts.Update(findedPost);
                 await _context.SaveChangesAsync();
+            }
+            else
+            {
+                throw new NotFoundException(nameof(User), postId);
             }
 
             var updatedPost = await _context.Posts

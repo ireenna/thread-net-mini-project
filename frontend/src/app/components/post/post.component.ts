@@ -16,6 +16,7 @@ import { EditPost } from 'src/app/models/post/edit-post';
 import { Reaction } from 'src/app/models/reactions/reaction';
 import { ReactionDialogService } from 'src/app/services/reaction-dialog.service';
 import { ShareDialogService } from 'src/app/services/share-dialog.service';
+import { GyazoService } from 'src/app/services/gyazo.service';
 
 @Component({
     selector: 'app-post',
@@ -27,6 +28,7 @@ export class PostComponent implements OnDestroy {
     @Input() public currentUser: User;
     @Input() public editedPost: EditPost;
     public cachedBody: string;
+    public cachedImage: string;
     public showComments = false;
     public newComment = {} as NewComment;
     public postEditMode = false;
@@ -46,7 +48,8 @@ export class PostComponent implements OnDestroy {
         private snackBarService: SnackBarService,
         private postService: PostService,
         private reactionDialogService: ReactionDialogService,
-        private shareDialogService: ShareDialogService
+        private shareDialogService: ShareDialogService,
+        private gyazoService: GyazoService
     ) {}
 
     public ngOnDestroy() {
@@ -155,18 +158,27 @@ export class PostComponent implements OnDestroy {
 
     public toggleEditMode() {
         this.cachedBody = this.post.body;
+        this.cachedImage = this.post.previewImage;
         this.postEditMode = !this.postEditMode;
     }
     public cancelEditing() {
         this.post.body = this.cachedBody;
+        this.post.previewImage = this.cachedImage;
         this.toggleEditMode();
     }
 
     public saveEditedPost() {
-        this.editedPost = {body:this.post.body};
+        console.log(this.imageFile)
+        if(this.imageFile){
+            this.gyazoService.uploadImage(this.imageFile).pipe(
+                switchMap((imageData) => {
+                    return this.post.previewImage = imageData.url;
+                }))
+        }
+
+        this.editedPost = {body:this.post.body, previewImage: this.post.previewImage};
         const postEditing = this.postService.updatePost(this.editedPost, this.post.id);
         this.loading = true;
-
         postEditing.pipe(takeUntil(this.unsubscribe$)).subscribe(
             (resp) => {
                 this.post = resp.body;
@@ -200,7 +212,6 @@ export class PostComponent implements OnDestroy {
         this.reactionDialogService.openReactionDialog(this.post.reactions);
     }
     public handleFileInput(target: any) {
-        alert(this.post.previewImage)
         this.imageFile = target.files[0];
 
         if (!this.imageFile) {
@@ -217,7 +228,6 @@ export class PostComponent implements OnDestroy {
         const reader = new FileReader();
         reader.addEventListener('load', () => (this.post.previewImage = reader.result as string));
         reader.readAsDataURL(this.imageFile);
-        alert(this.post.previewImage)
     }
     public sharePost(){
         this.shareDialogService.openShareDialog(this.post, this.currentUser);
