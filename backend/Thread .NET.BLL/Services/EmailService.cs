@@ -22,11 +22,13 @@ namespace Thread_.NET.BLL.Services
 
             emailMessage.From.Add(new MailboxAddress("Thread.NET", "somebusinessmail57@gmail.com"));
             emailMessage.To.Add(new MailboxAddress("", dto.Email));
-            emailMessage.Subject = $"The user {dto.UserName} shares with you a post!";
+            emailMessage.Subject = $"{dto.User?.UserName ?? "Someone"} shares with you a post!";
+
             emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html)
             {
-                Text = dto.Body
+                Text = $"<div><img alt=\"Avatar\" style=\"border-radius: 100px; width: 40px; height: 40px\" src=\"{dto.Post.Author.Avatar}\"><b>{dto.Post.Author.UserName}</b></div><p>{dto.Post.Body}</p><img alt=\"Image\" src=\"{dto.Post.PreviewImage}\">"
             };
+
 
             using (var client = new SmtpClient())
             {

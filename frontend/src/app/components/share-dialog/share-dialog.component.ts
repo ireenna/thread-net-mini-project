@@ -19,6 +19,7 @@ export class ShareDialogComponent implements OnInit {
     @Input() public email: EmailSharePost = {email: "", user: null, post: null};
     public emailAddress: string
     authDialogService: any;
+    snackBarService: any;
 
     constructor(
         private dialogRef: MatDialogRef<ShareDialogComponent>,
@@ -49,24 +50,14 @@ export class ShareDialogComponent implements OnInit {
     
     public sendEmail(){
         this.email.email = this.emailAddress
-        if (!this.email.user) {
-            this.catchErrorWrapper(this.authService.getUser())
-                .pipe(
-                    switchMap((userResp) => {
-                        this.email.user = userResp;
-                        return this.postService.sharePostByEmail(this.email)
-                    }),
-                    takeUntil(this.unsubscribe$)
-                )
-                .subscribe();
-
-            return;
-        }
-
-        this.postService
-            .sharePostByEmail(this.email)
-            .pipe(takeUntil(this.unsubscribe$))
-            .subscribe();
+        this.postService.sharePostByEmail(this.email)
+        .pipe(takeUntil(this.unsubscribe$))
+        .subscribe(
+             () => {
+                 this.snackBarService.showUsualMessage('Successfully shared');
+             },
+             (error) => this.snackBarService.showErrorMessage(error)
+         );
     }
 
     public close() {

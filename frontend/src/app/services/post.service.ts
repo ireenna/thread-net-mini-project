@@ -42,8 +42,7 @@ export class PostService {
     }
     
     public sharePostByEmail(email:EmailSharePost) {
-        alert(email.email+"; user: "+email.user.userName+"; post: "+email.post.id)
-        return null
-        // return this.httpService.postFullRequest(`${this.routePrefix}/share/email`, email);
+        // alert(email.email+"; user: "+email.user.userName+"; post: "+email.post.id)
+        return this.httpService.postFullRequest(`${this.routePrefix}/share/email`, email);
     }
 }
