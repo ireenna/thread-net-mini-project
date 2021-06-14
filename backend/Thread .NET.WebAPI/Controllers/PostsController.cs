@@ -86,10 +86,9 @@ namespace Thread_.NET.WebAPI.Controllers
 
         [HttpPost("share/email")]
         [AllowAnonymous]
-        public async Task<ActionResult> SharePost([FromBody] SharePostMailDTO dto)
+        public async Task<ActionResult<SharePostMailDTO>> SharePost([FromBody] SharePostMailDTO dto)
         {
-            await _emailService.SharePost(dto);
-            return Ok();
+            return Ok(await _emailService.SharePost(dto));
         }
     }
 }

@@ -16,7 +16,7 @@ namespace Thread_.NET.BLL.Services
     {
         public EmailService(ThreadContext context, IMapper mapper) : base(context, mapper) { }
 
-        public async Task SharePost(SharePostMailDTO dto)
+        public async Task<SharePostMailDTO> SharePost(SharePostMailDTO dto)
         {
             var emailMessage = new MimeMessage();
 
@@ -38,6 +38,7 @@ namespace Thread_.NET.BLL.Services
 
                 await client.DisconnectAsync(true);
             }
+            return dto;
         }
     }
 }

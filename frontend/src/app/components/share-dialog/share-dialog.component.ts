@@ -9,6 +9,7 @@ import { Post } from 'src/app/models/post/post';
 import { EmailSharePost } from 'src/app/models/email/email-share-post';
 import { PostService } from 'src/app/services/post.service';
 import { empty, Observable, Subject } from 'rxjs';
+import { AuthDialogService } from 'src/app/services/auth-dialog.service';
 
 
 @Component({
@@ -18,14 +19,14 @@ import { empty, Observable, Subject } from 'rxjs';
 export class ShareDialogComponent implements OnInit {
     @Input() public email: EmailSharePost = {email: "", user: null, post: null};
     public emailAddress: string
-    authDialogService: any;
-    snackBarService: any;
 
     constructor(
         private dialogRef: MatDialogRef<ShareDialogComponent>,
         @Inject(MAT_DIALOG_DATA) public data: {Post, User},
         private postService: PostService,
-        private authService: AuthenticationService
+        private authService: AuthenticationService,
+        private authDialogService: AuthDialogService,
+        private snackBarService: SnackBarService
     ) {}
 
     private unsubscribe$ = new Subject<void>();
@@ -33,19 +34,6 @@ export class ShareDialogComponent implements OnInit {
     public ngOnInit() {
         this.email.post = this.data.Post;
         this.email.user = this.data.User;
-    }
-
-    private catchErrorWrapper(obs: Observable<User>) {
-        return obs.pipe(
-            catchError(() => {
-                this.openAuthDialog();
-                return empty();
-            })
-        );
-    }
-
-    public openAuthDialog() {
-        this.authDialogService.openAuthDialog(DialogType.SignIn);
     }
     
     public sendEmail(){
@@ -55,6 +43,7 @@ export class ShareDialogComponent implements OnInit {
         .subscribe(
              () => {
                  this.snackBarService.showUsualMessage('Successfully shared');
+                 this.close();
              },
              (error) => this.snackBarService.showErrorMessage(error)
          );

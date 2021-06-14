@@ -199,24 +199,26 @@ export class PostComponent implements OnDestroy {
     public openLikedDialog() {
         this.reactionDialogService.openReactionDialog(this.post.reactions);
     }
-    // public handleFileInput(target: any) {
-    //     this.imageFile = target.files[0];
+    public handleFileInput(target: any) {
+        alert(this.post.previewImage)
+        this.imageFile = target.files[0];
 
-    //     if (!this.imageFile) {
-    //         target.value = '';
-    //         return;
-    //     }
+        if (!this.imageFile) {
+            target.value = '';
+            return;
+        }
 
-    //     if (this.imageFile.size / 1000000 > 5) {
-    //         this.snackBarService.showErrorMessage(`Image can't be heavier than ~5MB`);
-    //         target.value = '';
-    //         return;
-    //     }
+        if (this.imageFile.size / 1000000 > 5) {
+            this.snackBarService.showErrorMessage(`Image can't be heavier than ~5MB`);
+            target.value = '';
+            return;
+        }
 
-    //     const reader = new FileReader();
-    //     reader.addEventListener('load', () => (this.post.previewImage = reader.result as string));
-    //     reader.readAsDataURL(this.imageFile);
-    // }
+        const reader = new FileReader();
+        reader.addEventListener('load', () => (this.post.previewImage = reader.result as string));
+        reader.readAsDataURL(this.imageFile);
+        alert(this.post.previewImage)
+    }
     public sharePost(){
         this.shareDialogService.openShareDialog(this.post, this.currentUser);
     }
