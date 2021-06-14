@@ -18,12 +18,14 @@ namespace Thread_.NET.WebAPI.Controllers
         private readonly PostService _postService;
         private readonly LikeService _likeService;
         private readonly DislikeService _dislikeService;
+        private readonly EmailService _emailService;
 
-        public PostsController(PostService postService, LikeService likeService, DislikeService dislikeService)
+        public PostsController(PostService postService, LikeService likeService, DislikeService dislikeService, EmailService emailService)
         {
             _postService = postService;
             _likeService = likeService;
             _dislikeService = dislikeService;
+            _emailService = emailService;
         }
 
         [HttpGet]
@@ -47,6 +49,7 @@ namespace Thread_.NET.WebAPI.Controllers
 
             return Ok(await _postService.CreatePost(dto));
         }
+
         [HttpDelete("{id}")]
         public async Task<ActionResult<PostDTO>> DeletePost([FromRoute] int id)
         {
@@ -71,6 +74,7 @@ namespace Thread_.NET.WebAPI.Controllers
             await _likeService.LikePost(reaction);
             return Ok();
         }
+
         [HttpPost("dislike")]
         public async Task<IActionResult> DislikePost(NewReactionDTO reaction)
         {
@@ -79,6 +83,13 @@ namespace Thread_.NET.WebAPI.Controllers
             await _dislikeService.DislikePost(reaction);
             return Ok();
         }
-        
+
+        [HttpPost("share/email")]
+        [AllowAnonymous]
+        public async Task<ActionResult> SharePost([FromBody] SharePostMailDTO dto)
+        {
+            await _emailService.SharePost(dto);
+            return Ok();
+        }
     }
 }

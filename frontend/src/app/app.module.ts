@@ -17,9 +17,10 @@ import { AuthDialogComponent } from './components/auth-dialog/auth-dialog.compon
 import { CommentComponent } from './components/comment/comment.component';
 import { MaterialComponentsModule } from './components/common/material-components.module';
 import { ReactionDialogComponent } from './components/reaction-dialog/reaction-dialog.component';
+import { ShareDialogComponent } from './components/share-dialog/share-dialog.component';
 
 @NgModule({
-    declarations: [AppComponent, MainThreadComponent, PostComponent, HomeComponent, UserProfileComponent, AuthDialogComponent, ReactionDialogComponent, CommentComponent],
+    declarations: [AppComponent, MainThreadComponent, PostComponent, HomeComponent, UserProfileComponent, AuthDialogComponent, ReactionDialogComponent, CommentComponent, ShareDialogComponent],
     imports: [BrowserModule, BrowserAnimationsModule, HttpClientModule, MaterialComponentsModule, RouterModule.forRoot(AppRoutes), FormsModule],
     exports: [MaterialComponentsModule],
     providers: [

@@ -15,6 +15,7 @@ import { PostService } from 'src/app/services/post.service';
 import { EditPost } from 'src/app/models/post/edit-post';
 import { Reaction } from 'src/app/models/reactions/reaction';
 import { ReactionDialogService } from 'src/app/services/reaction-dialog.service';
+import { ShareDialogService } from 'src/app/services/share-dialog.service';
 
 @Component({
     selector: 'app-post',
@@ -44,7 +45,8 @@ export class PostComponent implements OnDestroy {
         private commentService: CommentService,
         private snackBarService: SnackBarService,
         private postService: PostService,
-        private reactionDialogService: ReactionDialogService
+        private reactionDialogService: ReactionDialogService,
+        private shareDialogService: ShareDialogService
     ) {}
 
     public ngOnDestroy() {
@@ -215,4 +217,7 @@ export class PostComponent implements OnDestroy {
     //     reader.addEventListener('load', () => (this.post.previewImage = reader.result as string));
     //     reader.readAsDataURL(this.imageFile);
     // }
+    public sharePost(){
+        this.shareDialogService.openShareDialog(this.post, this.currentUser);
+    }
 }
