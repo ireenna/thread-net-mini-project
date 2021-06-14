@@ -1,0 +1,33 @@
+<mat-dialog-content>
+<mat-tab-group>
+    <mat-tab >
+    <ng-template mat-tab-label>
+        <mat-icon class="example-tab-icon">favorite</mat-icon>
+        Liked
+      </ng-template>
+      <mat-list>
+        <div *ngFor="let user of likeUsers">
+            <mat-list-item><img mat-card-avatar src="{{user.avatar}}" alt="Avatar"> {{user.userName}}</mat-list-item>
+            <mat-divider></mat-divider>
+        </div>
+        <mat-list-item *ngIf="!likeUsers.length">There is nothing.</mat-list-item>
+      </mat-list>
+      </mat-tab>
+      <mat-tab>
+        <ng-template mat-tab-label>
+            <mat-icon class="example-tab-icon">thumb_down</mat-icon>
+            Disliked
+          </ng-template>
+          <mat-list>
+            <div *ngFor="let user of dislikeUsers">
+              <mat-list-item><img mat-card-avatar src="{{user.avatar}}" alt="Avatar"> {{user.userName}}</mat-list-item>
+              <mat-divider></mat-divider>
+          </div>
+          <mat-list-item *ngIf="!dislikeUsers.length">There is nothing.</mat-list-item>
+        </mat-list>
+        </mat-tab>
+</mat-tab-group>
+<div class="actions">
+  <button mat-raised-button (click)="close()">Close</button>
+</div>
+</mat-dialog-content>

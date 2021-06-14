@@ -1,14 +1,39 @@
 ﻿using Bogus;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 using Thread_.NET.Common.Security;
 using Thread_.NET.DAL.Entities;
 using Thread_.NET.DAL.Entities.Abstract;
 
 namespace Thread_.NET.DAL.Context
 {
+    public static class SoftDeleteQueryExtension
+    {
+        public static void AddSoftDeleteQueryFilter(
+            this IMutableEntityType entityData)
+        {
+            var methodToCall = typeof(SoftDeleteQueryExtension)
+                .GetMethod(nameof(GetSoftDeleteFilter),
+                    BindingFlags.NonPublic | BindingFlags.Static)
+                .MakeGenericMethod(entityData.ClrType);
+            var filter = methodToCall.Invoke(null, new object[] { });
+            entityData.SetQueryFilter((LambdaExpression)filter);
+            entityData.AddIndex(entityData.
+                 FindProperty(nameof(ISoftDeleted.IsDeleted)));
+        }
+
+        private static LambdaExpression GetSoftDeleteFilter<TEntity>()
+            where TEntity : class, ISoftDeleted
+        {
+            Expression<Func<TEntity, bool>> filter = x => !x.IsDeleted;
+            return filter;
+        }
+    }
     public static class ModelBuilderExtensions
     {
         private const int ENTITY_COUNT = 20;
@@ -18,40 +43,57 @@ namespace Thread_.NET.DAL.Context
             modelBuilder.Entity<RefreshToken>().Ignore(t => t.IsActive);
 
             modelBuilder.Entity<PostReaction>()
+                .HasQueryFilter(p => !p.IsDeleted)
                 .HasAlternateKey(pr => new { pr.PostId, pr.UserId });
 
             modelBuilder.Entity<PostReaction>()
+                .HasQueryFilter(p => !p.IsDeleted)
                 .HasOne(pr => pr.Post)
                 .WithMany()
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<CommentReaction>()
+                .HasQueryFilter(p => !p.IsDeleted)
                 .HasAlternateKey(cr => new { cr.CommentId, cr.UserId });
 
             modelBuilder.Entity<CommentReaction>()
+                .HasQueryFilter(p => !p.IsDeleted)
                 .HasOne(cr => cr.Comment)
                 .WithMany()
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Post>()
+                .HasQueryFilter(p => !p.IsDeleted)
                 .HasMany(p => p.Comments)
                 .WithOne(c => c.Post)
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Post>()
+                .HasQueryFilter(p => !p.IsDeleted)
                 .HasOne(p => p.Preview)
                 .WithMany()
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Post>()
+                .HasQueryFilter(p=>!p.IsDeleted)
                 .HasMany(p => p.Reactions)
                 .WithOne(r => r.Post)
                 .HasForeignKey(r => r.PostId);
 
             modelBuilder.Entity<Comment>()
+                .HasQueryFilter(p => !p.IsDeleted)
                 .HasMany(p => p.Reactions)
                 .WithOne(r => r.Comment)
                 .HasForeignKey(r => r.CommentId);
+
+            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+            {
+                //other automated configurations left out
+                if (typeof(ISoftDeleted).IsAssignableFrom(entityType.ClrType))
+                {
+                    entityType.AddSoftDeleteQueryFilter();
+                }
+            }
         }
 
         public static void Seed(this ModelBuilder modelBuilder)
@@ -170,6 +212,7 @@ namespace Thread_.NET.DAL.Context
             var reactionsFake = new Faker<Reaction>()
                 .RuleFor(r => r.Id, f => reactionId++)
                 .RuleFor(r => r.IsLike, f => f.Random.Bool())
+                .RuleFor(r => r.IsDislike, f=> false)
                 .RuleFor(r => r.UserId, f => f.PickRandom(users).Id)
                 .RuleFor(pi => pi.CreatedAt, f => DateTime.Now)
                 .RuleFor(pi => pi.UpdatedAt, f => DateTime.Now);
@@ -184,6 +227,7 @@ namespace Thread_.NET.DAL.Context
             var postReactionsFake = new Faker<PostReaction>()
                 .RuleFor(pr => pr.Id, f => postReactionId++)
                 .RuleFor(cr => cr.IsLike, f => f.Random.Bool())
+                .RuleFor(cr => cr.IsDislike, f => false)
                 .RuleFor(cr => cr.UserId, f => f.PickRandom(users).Id)
                 .RuleFor(pr => pr.PostId, f => f.PickRandom(posts).Id)
                 .RuleFor(pi => pi.CreatedAt, f => DateTime.Now)
@@ -199,6 +243,7 @@ namespace Thread_.NET.DAL.Context
             var commentReactionsFake = new Faker<CommentReaction>()
                 .RuleFor(cr => cr.Id, f => commentReactionId++)
                 .RuleFor(cr => cr.IsLike, f => f.Random.Bool())
+                .RuleFor(cr => cr.IsDislike, f => false)
                 .RuleFor(cr => cr.UserId, f => f.PickRandom(users).Id)
                 .RuleFor(cr => cr.CommentId, f => f.PickRandom(comments).Id)
                 .RuleFor(pi => pi.CreatedAt, f => DateTime.Now)

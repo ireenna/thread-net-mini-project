@@ -24,6 +24,7 @@ export class MainThreadComponent implements OnInit, OnDestroy {
     public posts: Post[] = [];
     public cachedPosts: Post[] = [];
     public isOnlyMine = false;
+    public isLikedByMe = false;
 
     public currentUser: User;
     public imageUrl: string;
@@ -132,6 +133,23 @@ export class MainThreadComponent implements OnInit, OnDestroy {
         } else {
             this.isOnlyMine = false;
             this.posts = this.cachedPosts;
+        }
+    }
+    public sliderChangedByLikes(event: MatSlideToggleChange) {
+        if (event.checked) {
+            this.postService
+            .getLikedPosts()
+            .pipe(takeUntil(this.unsubscribe$))
+            .subscribe(
+                (resp) => {
+                    this.isLikedByMe = true;
+                    this.posts = resp.body;
+                },
+                (error) => (this.isLikedByMe = false) 
+            );
+        } else {
+            this.isLikedByMe = false;
+            this.getPosts();
         }
     }
 

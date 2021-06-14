@@ -11,6 +11,12 @@ import { User } from '../../models/user';
 import { Comment } from '../../models/comment/comment';
 import { catchError, switchMap, takeUntil } from 'rxjs/operators';
 import { SnackBarService } from '../../services/snack-bar.service';
+import { PostService } from 'src/app/services/post.service';
+import { EditPost } from 'src/app/models/post/edit-post';
+import { Reaction } from 'src/app/models/reactions/reaction';
+import { ReactionDialogService } from 'src/app/services/reaction-dialog.service';
+import { ShareDialogService } from 'src/app/services/share-dialog.service';
+import { GyazoService } from 'src/app/services/gyazo.service';
 
 @Component({
     selector: 'app-post',
@@ -20,9 +26,17 @@ import { SnackBarService } from '../../services/snack-bar.service';
 export class PostComponent implements OnDestroy {
     @Input() public post: Post;
     @Input() public currentUser: User;
-
+    @Input() public editedPost: EditPost;
+    public cachedBody: string;
+    public cachedImage: string;
     public showComments = false;
     public newComment = {} as NewComment;
+    public postEditMode = false;
+    public loading = false;
+    public isDeleted = false;
+    public users: User[] = [];
+    public shownUsers = 3;
+    public imageFile: File;
 
     private unsubscribe$ = new Subject<void>();
 
@@ -31,7 +45,11 @@ export class PostComponent implements OnDestroy {
         private authDialogService: AuthDialogService,
         private likeService: LikeService,
         private commentService: CommentService,
-        private snackBarService: SnackBarService
+        private snackBarService: SnackBarService,
+        private postService: PostService,
+        private reactionDialogService: ReactionDialogService,
+        private shareDialogService: ShareDialogService,
+        private gyazoService: GyazoService
     ) {}
 
     public ngOnDestroy() {
@@ -63,7 +81,7 @@ export class PostComponent implements OnDestroy {
                     takeUntil(this.unsubscribe$)
                 )
                 .subscribe((post) => (this.post = post));
-
+            
             return;
         }
 
@@ -71,8 +89,38 @@ export class PostComponent implements OnDestroy {
             .likePost(this.post, this.currentUser)
             .pipe(takeUntil(this.unsubscribe$))
             .subscribe((post) => (this.post = post));
+
+    
     }
 
+    public dislikePost() {
+        if (!this.currentUser) {
+            this.catchErrorWrapper(this.authService.getUser())
+                .pipe(
+                    switchMap((userResp) => this.likeService.dislikePost(this.post, userResp)),
+                    takeUntil(this.unsubscribe$)
+                )
+                .subscribe((post) => (this.post = post));
+
+            return;
+        }
+
+        this.likeService
+            .dislikePost(this.post, this.currentUser)
+            .pipe(takeUntil(this.unsubscribe$))
+            .subscribe((post) => (this.post = post));
+    }
+    public getLikes(){
+        var filteredLikes = this.post.reactions.filter(reactions => reactions.isLike == true)
+        var countLikes = filteredLikes.length;
+        
+        return countLikes;
+    }
+    public getDislikes(){
+        var filteredDislikes = this.post.reactions.filter(reactions => reactions.isDislike == true)
+        var countDislikes = filteredDislikes.length;
+        return countDislikes;
+    }
     public sendComment() {
         this.newComment.authorId = this.currentUser.id;
         this.newComment.postId = this.post.id;
@@ -106,5 +154,82 @@ export class PostComponent implements OnDestroy {
 
     private sortCommentArray(array: Comment[]): Comment[] {
         return array.sort((a, b) => +new Date(b.createdAt) - +new Date(a.createdAt));
+    }
+
+    public toggleEditMode() {
+        this.cachedBody = this.post.body;
+        this.cachedImage = this.post.previewImage;
+        this.postEditMode = !this.postEditMode;
+    }
+    public cancelEditing() {
+        this.post.body = this.cachedBody;
+        this.post.previewImage = this.cachedImage;
+        this.toggleEditMode();
+    }
+
+    public saveEditedPost() {
+        console.log(this.imageFile)
+        if(this.imageFile){
+            this.gyazoService.uploadImage(this.imageFile).pipe(
+                switchMap((imageData) => {
+                    return this.post.previewImage = imageData.url;
+                }))
+        }
+
+        this.editedPost = {body:this.post.body, previewImage: this.post.previewImage};
+        const postEditing = this.postService.updatePost(this.editedPost, this.post.id);
+        this.loading = true;
+        postEditing.pipe(takeUntil(this.unsubscribe$)).subscribe(
+            (resp) => {
+                this.post = resp.body;
+                this.snackBarService.showUsualMessage('Successfully updated');
+                this.loading = false;
+            },
+            (error) => this.snackBarService.showErrorMessage(error)
+        );
+
+        this.postEditMode = false;
+    }
+    public getUsersLikedPost(){
+        this.users=[]
+        this.post.reactions.filter(reactions => reactions.isLike == true).forEach(r => this.users.push(r.user))
+        return this.users
+    }
+    public deletePost(){
+        if(this.post.author.id === this.currentUser.id){
+           this.postService.deletePost(this.post.id)
+           .pipe(takeUntil(this.unsubscribe$))
+           .subscribe(
+                () => {
+                    this.snackBarService.showUsualMessage('Successfully deleted');
+                    this.isDeleted = true;
+                },
+                (error) => this.snackBarService.showErrorMessage(error)
+            );
+        }
+    }
+    public openLikedDialog() {
+        this.reactionDialogService.openReactionDialog(this.post.reactions);
+    }
+    public handleFileInput(target: any) {
+        this.imageFile = target.files[0];
+
+        if (!this.imageFile) {
+            target.value = '';
+            return;
+        }
+
+        if (this.imageFile.size / 1000000 > 5) {
+            this.snackBarService.showErrorMessage(`Image can't be heavier than ~5MB`);
+            target.value = '';
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.addEventListener('load', () => (this.post.previewImage = reader.result as string));
+        reader.readAsDataURL(this.imageFile);
+    }
+    public sharePost(){
+        this.shareDialogService.openShareDialog(this.post, this.currentUser);
     }
 }

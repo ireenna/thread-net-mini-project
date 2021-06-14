@@ -1,18 +1,65 @@
-<mat-card>
+<mat-card *ngIf="!this.commentEditMode && !this.isDeleted">
   <mat-card-header>
     <img mat-card-avatar src="{{comment.author.avatar}}" alt="Avatar">
     <mat-card-title>{{comment.author.userName}} </mat-card-title>
     <div>{{comment.createdAt | date:'d/M/yy, h:mm a'}}</div>
+    <div *ngIf="getEditMode(comment.author.userName) === true">
+      <button mat-icon-button matTooltip="Edit a comment" (click)="toggleEditMode()">
+        <mat-icon>edit</mat-icon>
+      </button>
+      <button mat-icon-button matTooltip="Delete a comment" (click)="deleteComment()">
+        <mat-icon>close</mat-icon>
+      </button>
+      </div>
   </mat-card-header>
   <mat-card-content>
     <p>{{comment.body}}</p>
   </mat-card-content>
   <mat-card-actions class="actions-buttons" align="end">
-    <button mat-icon-button color="primary">
-      <mat-icon aria-label="Like">favorite</mat-icon>
+    <div class="users-liked" (click)="openLikedDialog()" *ngIf="getUsersLikedComment()">
+      <div *ngIf="users.length <= shownUsers">
+        <img mat-card-avatar *ngFor="let user of users" src="{{user.avatar}}" alt="Avatar" matTooltip="{{user.userName}}" >
+      </div>
+      <div *ngIf="users.length > shownUsers">
+        <img mat-card-avatar *ngFor="let user of users.slice(users.length-shownUsers,users.length)" matTooltip="{{user.userName}}" src="{{user.avatar}}" alt="Avatar">
+        <span matBadge="+{{users.length-shownUsers}}" matBadgePosition="after" matBadgeColor="accent"></span>
+      </div>
+  </div>
+    <button mat-icon-button color="primary" (click)="likeComment()">
+      <mat-icon matBadge="{{getLikes()}}" matBadgeColor="accent" matBadgeSize="small"
+        [matBadgeHidden]="getLikes() === 0" aria-label="Like">favorite</mat-icon>
+    </button>
+    <button mat-icon-button color="primary" (click)="dislikeComment()">
+      <mat-icon matBadge="{{getDislikes()}}" matBadgeColor="accent" matBadgeSize="small"
+        [matBadgeHidden]="getDislikes() === 0" aria-label="Dislike">thumb_down</mat-icon>
+    </button>
+    <button mat-icon-button color="primary" (click)="openLikedDialog()">
+      <mat-icon matTooltip="Show info (likes & dislikes)" aria-label="Info">poll</mat-icon>
     </button>
     <button mat-icon-button color="accent">
       <mat-icon aria-label="Share">share</mat-icon>
     </button>
   </mat-card-actions>
+</mat-card>
+<mat-card *ngIf="this.commentEditMode === true">
+  <mat-card-header>
+    <img mat-card-avatar src="{{comment.author.avatar}}" alt="Avatar">
+    <mat-card-title>{{comment.author.userName}} </mat-card-title>
+    <div>{{comment.createdAt | date:'d/M/yy, h:mm a'}}</div>
+  </mat-card-header>
+  <form name="commentForm" #commentForm="ngForm" class="main-content">
+    <mat-form-field>
+        <textarea name="body" [(ngModel)]="comment.body" #body="ngModel" matInput placeholder="Text...">{{comment.body}}</textarea>
+    </mat-form-field>
+  </form>
+  <mat-card-actions class="actions-buttons" >
+    <div class="buttons">
+      <button mat-raised-button color="primary" (click)="saveEditedComment()">
+        Save
+      </button>
+      <button mat-raised-button (click)="cancelEditing()">
+        Cancel
+      </button>
+  </div>
+</mat-card-actions>
 </mat-card>
